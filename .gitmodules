@@ -1,0 +1,3 @@
+[submodule "Pina/Discord-Utils"]
+	path = Pina/Discord-Utils
+	url = https://github.com/Xwilarg/Discord-Utils
