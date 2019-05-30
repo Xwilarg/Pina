@@ -138,7 +138,7 @@ namespace Pina
                     roles.Add(role);
                 }
                 await Program.P.GetDb().SetWhitelist(Context.Guild.Id, string.Join("|", roles.Select(x => x.Id)));
-                await ReplyAsync(Sentences.WhitelistSet(Context.Guild.Id, string.Join(", ", roles.Select(x => x.Name))));
+                await ReplyAsync(Sentences.WhitelistSet(Context.Guild.Id, string.Join(", ", roles.Select(x => x.Name.Replace("@everyone", "@ everyone")))));
             }
         }
     }
