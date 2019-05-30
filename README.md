@@ -7,12 +7,12 @@ However that include the ability to delete messages so it can be a bit risky to 
 Thanks to this bot, anyone is now able to pin message by writing p.pin or by adding 📌 emote to the corresponding message.
 
 ## Command list
-**Pin**: Pin a message
-**Language [language name]**: Set my speaking language
-**Verbosity [none/error/info]**: Set if I say something or not when something occur
-**Whitelist [(optionnal)roles]**: Set the roles that can pin messages, don't write anything for all
-**Prefix [(optionnal)prefix]**: Set the prefix for bot command, don't write anything to allow the use of command without one
-**Gdpr**: Display the information I have about this guild
+**Pin**: Pin a message<br/>
+**Language [language name]**: Set my speaking language<br/>
+**Verbosity [none/error/info]**: Set if I say something or not when something occur<br/>
+**Whitelist [(optionnal)roles]**: Set the roles that can pin messages, don't write anything for all<br/>
+**Prefix [(optionnal)prefix]**: Set the prefix for bot command, don't write anything to allow the use of command without one<br/>
+**Gdpr**: Display the information I have about this guild<br/>
 **Info**: Display various information about me
 
 ## Invite Pina in your server
