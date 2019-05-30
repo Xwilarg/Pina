@@ -53,7 +53,7 @@ namespace Pina
             else
             {
                 await Program.P.GetDb().SetLanguageAsync(Context.Guild.Id, language);
-                await ReplyAsync(Sentences.LanguageSet(Context.Guild.Id, CultureInfo.CurrentCulture.TextInfo.ToTitleCase(Program.P.translationKeyAlternate[language][1])));
+                await ReplyAsync(Sentences.LanguageSet(Context.Guild.Id, Program.P.translationKeyAlternate[language][1]));
             }
         }
 
