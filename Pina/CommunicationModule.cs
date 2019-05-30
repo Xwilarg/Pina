@@ -22,23 +22,33 @@ namespace Pina
                 Color = Color.Purple,
                 Title = "Help",
                 Description =
-                    "I'm here to simplify the process of pinning messages." + Environment.NewLine +
-                    "Please make sure that I have the 'Manage Messages' permission (I need it to pin messages)" + Environment.NewLine +
-                    "Then you have 2 ways to pin a message:" + Environment.NewLine +
-                    "Add a 📌 reaction to the message you want to pin" + Environment.NewLine +
-                    "Do the 'Pin' command followed by the ID of the message you want to pin"
+                    Sentences.HelpIntro(Context.Guild?.Id) + Environment.NewLine +
+                    Sentences.HelpPerm(Context.Guild?.Id) + Environment.NewLine +
+                    Sentences.HelpPin(Context.Guild?.Id) +
+                    (Context.Guild == null ? "" : Environment.NewLine + Environment.NewLine +
+                        Sentences.HelpSettings(Context.Guild.Id) + Environment.NewLine +
+                        Sentences.HelpLanguage(Context.Guild.Id) + Environment.NewLine +
+                        Sentences.HelpVerbosity(Context.Guild.Id) + Environment.NewLine +
+                        Sentences.HelpPrefix(Context.Guild.Id)) +
+                    Environment.NewLine + Environment.NewLine +
+                    Sentences.HelpCommunication(Context.Guild?.Id) + Environment.NewLine +
+                    Sentences.HelpGdpr(Context.Guild?.Id) + Environment.NewLine +
+                    Sentences.HelpInfo(Context.Guild?.Id)
             }.Build());
         }
 
         [Command("GDPR"), Summary("Show infos the bot have about the user and the guild")]
         public async Task GDPR(params string[] command)
         {
-            await ReplyAsync("", false, new EmbedBuilder()
-            {
-                Color = Color.Blue,
-                Title = "Data saved about " + Context.Guild.Name,
-                Description = await Program.P.GetDb().GetGuildAsync(Context.Guild.Id)
-            }.Build());
+            if (Context.Guild == null)
+                await ReplyAsync(Sentences.GdprPm(null));
+            else
+                await ReplyAsync("", false, new EmbedBuilder()
+                {
+                    Color = Color.Blue,
+                    Title = Sentences.DataSavedAbout(Context.Guild.Id, Context.Guild.Name),
+                    Description = await Program.P.GetDb().GetGuildAsync(Context.Guild.Id)
+                }.Build());
         }
     }
 }

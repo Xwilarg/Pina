@@ -1,3 +1,6 @@
 [submodule "Pina/Discord-Utils"]
 	path = Pina/Discord-Utils
 	url = https://github.com/Xwilarg/Discord-Utils
+[submodule "Pina/Pina-translations"]
+	path = Pina/Pina-translations
+	url = https://github.com/Xwilarg/Pina-translations.git

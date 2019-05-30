@@ -5,6 +5,7 @@ using Discord.WebSocket;
 using DiscordUtils;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -24,6 +25,9 @@ namespace Pina
         private string statsWebsite, statsToken;
 
         private Db db;
+
+        public Dictionary<string, Dictionary<string, string>> translations;
+        public Dictionary<string, List<string>> translationKeyAlternate;
 
         public Db GetDb()
             => db;
@@ -52,6 +56,10 @@ namespace Pina
             db = new Db();
             await db.InitAsync();
 
+            translations = new Dictionary<string, Dictionary<string, string>>();
+            translationKeyAlternate = new Dictionary<string, List<string>>();
+            Utils.InitTranslations(translations, translationKeyAlternate, "../../Pina-translations/Translations");
+
             client.MessageReceived += HandleCommandAsync;
             client.ReactionAdded += ReactionAdded;
             client.GuildAvailable += InitGuild;
@@ -73,10 +81,10 @@ namespace Pina
             await db.InitGuildAsync(guild.Id);
         }
 
-        public async Task PinMessageAsync(IMessage msg)
+        public async Task PinMessageAsync(IMessage msg, ulong? guildId)
         {
             if (msg.IsPinned)
-                await msg.Channel.SendMessageAsync("This message was already pinned");
+                await msg.Channel.SendMessageAsync(Sentences.AlreadyPinned(guildId));
             else
             {
                 try
@@ -85,7 +93,7 @@ namespace Pina
                 }
                 catch (HttpException)
                 {
-                    await msg.Channel.SendMessageAsync("I wasn't able to pin the message, please make sure that I have the 'Manage Messages' permission.");
+                    await msg.Channel.SendMessageAsync(Sentences.MissingPermission(guildId));
                 }
             }
         }
@@ -94,7 +102,7 @@ namespace Pina
         {
             if (react.Emote.Name == "📌" || react.Emote.Name == "📍")
             {
-                await PinMessageAsync(await msg.GetOrDownloadAsync());
+                await PinMessageAsync(await msg.GetOrDownloadAsync(), react.Channel as ITextChannel == null ? (ulong?)null : ((ITextChannel)react.Channel).Guild.Id);
                 await Utils.WebsiteUpdate("Pina", statsWebsite, statsToken, "nbMsgs", "1");
             }
         }

@@ -14,6 +14,7 @@ namespace Pina
             guildsLanguage = new Dictionary<ulong, string>();
             guildsVerbosity = new Dictionary<ulong, string>();
             guildsWhitelist = new Dictionary<ulong, string>();
+            guildsPrefix = new Dictionary<ulong, string>();
         }
 
         public async Task InitAsync(string dbName = "Pina")
@@ -29,6 +30,7 @@ namespace Pina
         private const string defaultLanguage = "en";
         private const string defaultVebosity = "info";
         private const string defaultWhitelist = "0";
+        private const string defaultPrefix = "p.";
 
         public async Task InitGuildAsync(ulong guildId)
         {
@@ -38,29 +40,32 @@ namespace Pina
                    .With("language", defaultLanguage)
                    .With("verbosity", defaultVebosity)
                    .With("whitelist", defaultWhitelist)
+                   .With("prefix", defaultPrefix)
                     ).RunAsync(conn);
                 UpdateLanguage(guildId, defaultLanguage);
                 UpdateVerbosity(guildId, defaultVebosity);
                 UpdateWhitelist(guildId, defaultWhitelist);
+                UpdatePrefix(guildId, defaultPrefix);
             }
             else
             {
-                dynamic json = await R.Db(dbName).Table("Languages").Get(guildId.ToString()).RunAsync(conn);
-                UpdateLanguage(guildId, json.language);
-                UpdateVerbosity(guildId, json.verbosity);
-                UpdateWhitelist(guildId, json.whitelist);
+                dynamic json = await R.Db(dbName).Table("Guilds").Get(guildId.ToString()).RunAsync(conn);
+                UpdateLanguage(guildId, (string)json.language);
+                UpdateVerbosity(guildId, (string)json.verbosity);
+                UpdateWhitelist(guildId, (string)json.whitelist);
+                UpdatePrefix(guildId, (string)json.prefix);
             }
         }
 
         public async Task SetLanguageAsync(ulong guildId, string language)
         {
-            await R.Db(dbName).Table("Languages").Update(R.HashMap("id", guildId.ToString())
+            await R.Db(dbName).Table("Guilds").Update(R.HashMap("id", guildId.ToString())
                 .With("language", language)
                 ).RunAsync(conn);
             UpdateLanguage(guildId, language);
         }
 
-        private string GetLanguage(ulong guildId)
+        public string GetLanguage(ulong guildId)
         {
             return (guildsLanguage[guildId]);
         }
@@ -73,6 +78,9 @@ namespace Pina
 
         private void UpdateWhitelist(ulong guildId, string value)
             => UpdateDictionary(guildId, value, guildsWhitelist);
+
+        private void UpdatePrefix(ulong guildId, string value)
+            => UpdateDictionary(guildId, value, guildsPrefix);
 
         private void UpdateDictionary(ulong guildId, string value, Dictionary<ulong, string> dict)
         {
@@ -88,6 +96,7 @@ namespace Pina
         private Dictionary<ulong, string> guildsLanguage;
         private Dictionary<ulong, string> guildsVerbosity;
         private Dictionary<ulong, string> guildsWhitelist;
+        private Dictionary<ulong, string> guildsPrefix;
 
         private RethinkDB R;
         private Connection conn;

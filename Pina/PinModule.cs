@@ -9,23 +9,23 @@ namespace Pina
     class PinModule : ModuleBase
     {
         [Command("Pin", RunMode = RunMode.Async)]
-        private async Task Info(params string[] args)
+        private async Task Pin(params string[] args)
         {
             if (args.Length == 0)
             {
                 var msg = await GetLastMessage();
                 if (msg == null)
-                    await ReplyAsync("There is nothing to ping.");
+                    await ReplyAsync(Sentences.NothingToPing(Context.Guild?.Id));
                 else
-                    await Program.P.PinMessageAsync(msg);
+                    await Program.P.PinMessageAsync(msg, Context.Guild?.Id);
             }
             else
             {
                 IMessage msg = await Utils.GetMessage(args[0], Context.Channel);
                 if (msg == null)
-                    await ReplyAsync("I didn't found any message with this id");
+                    await ReplyAsync(Sentences.InvalidId(Context.Guild?.Id));
                 else
-                    await Program.P.PinMessageAsync(msg);
+                    await Program.P.PinMessageAsync(msg, Context.Guild?.Id);
             }
         }
 
