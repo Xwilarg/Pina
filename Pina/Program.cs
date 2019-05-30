@@ -74,6 +74,18 @@ namespace Pina
             StartTime = DateTime.Now;
             await client.StartAsync();
 
+            if (statsWebsite != null && statsToken != null)
+            {
+                var task = Task.Run(async () =>
+                {
+                    for (;;)
+                    {
+                        await Task.Delay(60000);
+                        await Utils.WebsiteUpdate("Pina", statsWebsite, statsToken, "serverCount", client.Guilds.Count.ToString());
+                    }
+                });
+            }
+
             await Task.Delay(-1);
         }
 
