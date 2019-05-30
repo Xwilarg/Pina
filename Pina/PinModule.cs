@@ -20,7 +20,7 @@ namespace Pina
                         await ReplyAsync(Sentences.NothingToPing(Context.Guild?.Id));
                 }
                 else
-                    await Program.P.PinMessageAsync(msg, Context.Guild?.Id);
+                    await Program.P.PinMessageAsync(msg, Context.User,  Context.Guild?.Id, false);
             }
             else
             {
@@ -31,7 +31,7 @@ namespace Pina
                         await ReplyAsync(Sentences.InvalidId(Context.Guild?.Id));
                 }
                 else
-                    await Program.P.PinMessageAsync(msg, Context.Guild?.Id);
+                    await Program.P.PinMessageAsync(msg, Context.User, Context.Guild?.Id, false);
             }
         }
 

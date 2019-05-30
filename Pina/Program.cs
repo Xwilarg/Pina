@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace Pina
@@ -81,12 +82,19 @@ namespace Pina
             await db.InitGuildAsync(guild.Id);
         }
 
-        public async Task PinMessageAsync(IMessage msg, ulong? guildId)
+        public async Task PinMessageAsync(IMessage msg, IUser user, ulong? guildId, bool isFromEmote)
         {
-            if (msg.IsPinned)
+            bool isNotInGuild = msg.Channel as ITextChannel == null;
+            if (!isNotInGuild && !db.IsWhitelisted(guildId, user))
+            {
+                ulong id = ((ITextChannel)msg.Channel).Guild.Id;
+                if (db.IsErrorOrMore(db.GetVerbosity(id)))
+                    await msg.Channel.SendMessageAsync((isFromEmote ? user.Mention + " " : "") + Sentences.WhitelistError(id));
+            }
+            else if (msg.IsPinned)
             {
                 if (db.GetVerbosity(msg.Channel as ITextChannel == null ? (ulong?)null : ((ITextChannel)msg.Channel).Guild.Id) == Db.Verbosity.Info)
-                    await msg.Channel.SendMessageAsync(Sentences.AlreadyPinned(guildId));
+                    await msg.Channel.SendMessageAsync((isFromEmote ? user.Mention + " " : "") + Sentences.AlreadyPinned(guildId));
             }
             else
             {
@@ -94,10 +102,17 @@ namespace Pina
                 {
                     await ((IUserMessage)msg).PinAsync();
                 }
-                catch (HttpException)
+                catch (HttpException http)
                 {
-                    if (db.IsErrorOrMore(db.GetVerbosity(msg.Channel as ITextChannel == null ? (ulong?)null : ((ITextChannel)msg.Channel).Guild.Id)))
-                        await msg.Channel.SendMessageAsync(Sentences.MissingPermission(guildId));
+                    if (db.IsErrorOrMore(db.GetVerbosity(isNotInGuild ? (ulong?)null : ((ITextChannel)msg.Channel).Guild.Id)))
+                    {
+                        if (http.HttpCode == HttpStatusCode.Forbidden)
+                            await msg.Channel.SendMessageAsync((isFromEmote ? user.Mention + " " : "") + Sentences.MissingPermission(guildId));
+                        else if (http.HttpCode == HttpStatusCode.BadRequest)
+                            await msg.Channel.SendMessageAsync((isFromEmote ? user.Mention + " " : "") + Sentences.TooManyPins(guildId));
+                        else
+                            throw http;
+                    }
                 }
             }
         }
@@ -106,15 +121,7 @@ namespace Pina
         {
             if (react.Emote.Name == "📌" || react.Emote.Name == "📍")
             {
-                bool isInGuild = react.Channel as ITextChannel == null;
-                if (isInGuild && !db.IsWhitelisted(((ITextChannel)react.Channel).Guild.Id, react.User.Value))
-                {
-                    ulong id = ((ITextChannel)react.Channel).Guild.Id;
-                    if (db.IsErrorOrMore(db.GetVerbosity(id)))
-                        await react.Channel.SendMessageAsync(Sentences.WhitelistError(id, react.User.Value.Mention));
-                }
-                else
-                    await PinMessageAsync(await msg.GetOrDownloadAsync(), isInGuild ? (ulong?)null : ((ITextChannel)react.Channel).Guild.Id);
+                await PinMessageAsync(await msg.GetOrDownloadAsync(), react.User.IsSpecified ? react.User.Value : null, react.Channel as ITextChannel == null ? (ulong?)null : ((ITextChannel)react.Channel).Guild.Id, true);
                 await Utils.WebsiteUpdate("Pina", statsWebsite, statsToken, "nbMsgs", "1");
             }
         }

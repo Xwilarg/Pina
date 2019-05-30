@@ -29,6 +29,7 @@ namespace Pina
                         Sentences.HelpSettings(Context.Guild.Id) + Environment.NewLine +
                         Sentences.HelpLanguage(Context.Guild.Id) + Environment.NewLine +
                         Sentences.HelpVerbosity(Context.Guild.Id) + Environment.NewLine +
+                        Sentences.HelpWhitelist(Context.Guild.Id) + Environment.NewLine +
                         Sentences.HelpPrefix(Context.Guild.Id)) +
                     Environment.NewLine + Environment.NewLine +
                     Sentences.HelpCommunication(Context.Guild?.Id) + Environment.NewLine +

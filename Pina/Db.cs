@@ -88,7 +88,7 @@ namespace Pina
             await R.Db(dbName).Table("Guilds").Update(R.HashMap("id", guildId.ToString())
                 .With("whitelist", whitelist)
                 ).RunAsync(conn);
-            UpdateVerbosity(guildId, whitelist);
+            UpdateWhitelist(guildId, whitelist);
         }
 
         public bool IsErrorOrMore(Verbosity v)

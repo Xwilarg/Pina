@@ -38,7 +38,7 @@ namespace Pina
             }
             string userInput = args[0].ToLower();
             string language = null;
-            if (Program.P.translationKeyAlternate.ContainsKey(language))
+            if (Program.P.translationKeyAlternate.ContainsKey(userInput))
                 language = userInput;
             foreach (var l in Program.P.translationKeyAlternate)
             {
