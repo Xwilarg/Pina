@@ -10,12 +10,25 @@ namespace Pina
 {
     public class SettingsModule : ModuleBase
     {
+        private bool CanModify(IUser user, ulong ownerId)
+        {
+            if (user.Id == ownerId)
+                return true;
+            IGuildUser guildUser = (IGuildUser)user;
+            return guildUser.GuildPermissions.ManageGuild;
+        }
+
         [Command("Language")]
         private async Task Language(params string[] args)
         {
             if (Context.Guild == null)
             {
                 await ReplyAsync(Sentences.SettingsPm(null));
+                return;
+            }
+            if (!CanModify(Context.User, Context.Guild.OwnerId))
+            {
+                await ReplyAsync(Sentences.SettingsNoPerm(Context.Guild.Id));
                 return;
             }
             if (args.Length == 0)
@@ -51,6 +64,10 @@ namespace Pina
             {
                 await ReplyAsync(Sentences.SettingsPm(null));
             }
+            if (!CanModify(Context.User, Context.Guild.OwnerId))
+            {
+                await ReplyAsync(Sentences.SettingsNoPerm(Context.Guild.Id));
+            }
             else if (args.Length == 0)
             {
                 await Program.P.GetDb().SetPrefix(Context.Guild.Id, "");
@@ -70,6 +87,10 @@ namespace Pina
             if (Context.Guild == null)
             {
                 await ReplyAsync(Sentences.SettingsPm(null));
+            }
+            if (!CanModify(Context.User, Context.Guild.OwnerId))
+            {
+                await ReplyAsync(Sentences.SettingsNoPerm(Context.Guild.Id));
             }
             else if (args.Length == 0)
             {
@@ -94,6 +115,10 @@ namespace Pina
             if (Context.Guild == null)
             {
                 await ReplyAsync(Sentences.SettingsPm(null));
+            }
+            if (!CanModify(Context.User, Context.Guild.OwnerId))
+            {
+                await ReplyAsync(Sentences.SettingsNoPerm(Context.Guild.Id));
             }
             else if (args.Length == 0)
             {

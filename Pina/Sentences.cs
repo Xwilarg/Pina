@@ -17,6 +17,7 @@ namespace Pina
         public static string GdprPm(ulong? guildId) => Translate(guildId, "gdprPm");
 
         public static string SettingsPm(ulong? guildId) => Translate(guildId, "settingsPm");
+        public static string SettingsNoPerm(ulong? guildId) => Translate(guildId, "settingsNoPerm");
         public static string LanguageHelp(ulong? guildId, string languageList) => Translate(guildId, "languageHelp", languageList);
         public static string VerbosityHelp(ulong? guildId) => Translate(guildId, "verbosityHelp");
         public static string InvalidLanguage(ulong? guildId, string languageList) => Translate(guildId, "invalidLanguage", languageList);
@@ -27,6 +28,8 @@ namespace Pina
         public static string VerbositySet(ulong? guildId, string verbosity) => Translate(guildId, "verbositySet", verbosity);
         public static string WhitelistSet(ulong? guildId, string roles) => Translate(guildId, "whitelistSet", roles);
         public static string WhitelistUnset(ulong? guildId) => Translate(guildId, "whitelistUnset");
+
+        public static string WhitelistError(ulong? guildId, string user) => Translate(guildId, "whitelistError", user);
 
         public static string HelpIntro(ulong? guildId) => Translate(guildId, "helpIntro");
         public static string HelpPerm(ulong? guildId) => Translate(guildId, "helpPerm");

@@ -84,7 +84,10 @@ namespace Pina
         public async Task PinMessageAsync(IMessage msg, ulong? guildId)
         {
             if (msg.IsPinned)
-                await msg.Channel.SendMessageAsync(Sentences.AlreadyPinned(guildId));
+            {
+                if (db.GetVerbosity(msg.Channel as ITextChannel == null ? (ulong?)null : ((ITextChannel)msg.Channel).Guild.Id) == Db.Verbosity.Info)
+                    await msg.Channel.SendMessageAsync(Sentences.AlreadyPinned(guildId));
+            }
             else
             {
                 try
@@ -93,7 +96,8 @@ namespace Pina
                 }
                 catch (HttpException)
                 {
-                    await msg.Channel.SendMessageAsync(Sentences.MissingPermission(guildId));
+                    if (db.IsErrorOrMore(db.GetVerbosity(msg.Channel as ITextChannel == null ? (ulong?)null : ((ITextChannel)msg.Channel).Guild.Id)))
+                        await msg.Channel.SendMessageAsync(Sentences.MissingPermission(guildId));
                 }
             }
         }
@@ -102,7 +106,15 @@ namespace Pina
         {
             if (react.Emote.Name == "📌" || react.Emote.Name == "📍")
             {
-                await PinMessageAsync(await msg.GetOrDownloadAsync(), react.Channel as ITextChannel == null ? (ulong?)null : ((ITextChannel)react.Channel).Guild.Id);
+                bool isInGuild = react.Channel as ITextChannel == null;
+                if (isInGuild && !db.IsWhitelisted(((ITextChannel)react.Channel).Guild.Id, react.User.Value))
+                {
+                    ulong id = ((ITextChannel)react.Channel).Guild.Id;
+                    if (db.IsErrorOrMore(db.GetVerbosity(id)))
+                        await react.Channel.SendMessageAsync(Sentences.WhitelistError(id, react.User.Value.Mention));
+                }
+                else
+                    await PinMessageAsync(await msg.GetOrDownloadAsync(), isInGuild ? (ulong?)null : ((ITextChannel)react.Channel).Guild.Id);
                 await Utils.WebsiteUpdate("Pina", statsWebsite, statsToken, "nbMsgs", "1");
             }
         }
@@ -112,7 +124,7 @@ namespace Pina
             SocketUserMessage msg = arg as SocketUserMessage;
             if (msg == null || arg.Author.IsBot) return;
             int pos = 0;
-            if (msg.HasMentionPrefix(client.CurrentUser, ref pos) || msg.HasStringPrefix("p.", ref pos))
+            if (msg.HasMentionPrefix(client.CurrentUser, ref pos) || msg.HasStringPrefix(db.GetPrefix(msg.Channel as ITextChannel == null ? (ulong?)null : ((ITextChannel)msg.Channel).Guild.Id), ref pos))
             {
                 SocketCommandContext context = new SocketCommandContext(client, msg);
                 IResult result = await commands.ExecuteAsync(context, pos, null);

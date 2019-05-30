@@ -15,7 +15,10 @@ namespace Pina
             {
                 var msg = await GetLastMessage();
                 if (msg == null)
-                    await ReplyAsync(Sentences.NothingToPing(Context.Guild?.Id));
+                {
+                    if (Program.P.GetDb().IsErrorOrMore(Program.P.GetDb().GetVerbosity(Context.Guild?.Id)))
+                        await ReplyAsync(Sentences.NothingToPing(Context.Guild?.Id));
+                }
                 else
                     await Program.P.PinMessageAsync(msg, Context.Guild?.Id);
             }
@@ -23,7 +26,10 @@ namespace Pina
             {
                 IMessage msg = await Utils.GetMessage(args[0], Context.Channel);
                 if (msg == null)
-                    await ReplyAsync(Sentences.InvalidId(Context.Guild?.Id));
+                {
+                    if (Program.P.GetDb().IsErrorOrMore(Program.P.GetDb().GetVerbosity(Context.Guild?.Id)))
+                        await ReplyAsync(Sentences.InvalidId(Context.Guild?.Id));
+                }
                 else
                     await Program.P.PinMessageAsync(msg, Context.Guild?.Id);
             }

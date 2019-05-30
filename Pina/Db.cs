@@ -91,6 +91,9 @@ namespace Pina
             UpdateVerbosity(guildId, whitelist);
         }
 
+        public bool IsErrorOrMore(Verbosity v)
+            => v == Verbosity.Error || v == Verbosity.Info;
+
         public string GetLanguage(ulong? guildId)
             => guildId == null ? defaultLanguage : guildsLanguage[guildId.Value];
 
