@@ -3,6 +3,7 @@ using Discord.Commands;
 using Discord.Net;
 using Discord.WebSocket;
 using DiscordUtils;
+using Newtonsoft.Json;
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -20,6 +21,8 @@ namespace Pina
         public DateTime StartTime { private set; get; }
         public static Program P { private set; get; }
 
+        private string statsWebsite, statsToken;
+
         private Program()
         {
             P = this;
@@ -28,18 +31,26 @@ namespace Pina
                 LogLevel = LogSeverity.Verbose,
             });
             client.Log += Utils.Log;
-            commands.Log += Utils.LogError;
+            commands.Log += Utils.Log;
         }
 
         private async Task MainAsync()
         {
+            if (!File.Exists("Keys/Credentials.json"))
+                throw new FileNotFoundException("Missing Keys/Credentials.json");
+            dynamic json = JsonConvert.DeserializeObject(File.ReadAllText("Keys/Credentials.json"));
+            if (json.botToken == null)
+                throw new NullReferenceException("Missing botToken in Credentials file");
+            statsWebsite = json.statsWebsite;
+            statsToken = json.statsToken;
+
             client.MessageReceived += HandleCommandAsync;
             client.ReactionAdded += ReactionAdded;
 
             await commands.AddModuleAsync<CommunicationModule>(null);
             await commands.AddModuleAsync<PinModule>(null);
 
-            await client.LoginAsync(TokenType.Bot, File.ReadAllText("Keys/token.txt"));
+            await client.LoginAsync(TokenType.Bot, (string)json.botToken);
             StartTime = DateTime.Now;
             await client.StartAsync();
 
@@ -66,7 +77,10 @@ namespace Pina
         private async Task ReactionAdded(Cacheable<IUserMessage, ulong> msg, ISocketMessageChannel _, SocketReaction react)
         {
             if (react.Emote.Name == "📌" || react.Emote.Name == "📍")
+            {
                 await PinMessageAsync(await msg.GetOrDownloadAsync());
+                await Utils.WebsiteUpdate("Pina", statsWebsite, statsToken, "nbMsgs", "1");
+            }
         }
 
         private async Task HandleCommandAsync(SocketMessage arg)
@@ -77,7 +91,9 @@ namespace Pina
             if (msg.HasMentionPrefix(client.CurrentUser, ref pos) || msg.HasStringPrefix("p.", ref pos))
             {
                 SocketCommandContext context = new SocketCommandContext(client, msg);
-                await commands.ExecuteAsync(context, pos, null);
+                IResult result = await commands.ExecuteAsync(context, pos, null);
+                if (result.IsSuccess && statsWebsite != null && statsToken != null)
+                    await Utils.WebsiteUpdate("Pina", statsWebsite, statsToken, "nbMsgs", "1");
             }
         }
     }

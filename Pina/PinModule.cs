@@ -13,11 +13,11 @@ namespace Pina
         {
             if (args.Length == 0)
             {
-                var msgs = (await Context.Channel.GetMessagesAsync(2).FlattenAsync()).ToArray();
-                if (msgs.Length < 2)
+                var msg = await GetLastMessage();
+                if (msg == null)
                     await ReplyAsync("There is nothing to ping.");
                 else
-                    await Program.P.PinMessageAsync(msgs[1]);
+                    await Program.P.PinMessageAsync(msg);
             }
             else
             {
@@ -27,6 +27,17 @@ namespace Pina
                 else
                     await Program.P.PinMessageAsync(msg);
             }
+        }
+
+        /// Sometimes the last message isn't pingable (like it can be the Discord message that say that a message was pinged) so we get the previous one
+        private async Task<IMessage> GetLastMessage(int getCount = 2)
+        {
+            var msgs = (await Context.Channel.GetMessagesAsync(getCount).FlattenAsync()).ToArray();
+            if (msgs.Length != getCount)
+                return null;
+            if (msgs.Last() as IUserMessage != null)
+                return msgs.Last();
+            return await GetLastMessage(getCount + 1);
         }
     }
 }
