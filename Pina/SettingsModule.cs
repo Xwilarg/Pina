@@ -71,7 +71,7 @@ namespace Pina
             else if (args.Length == 0)
             {
                 await Program.P.GetDb().SetPrefix(Context.Guild.Id, "");
-                await ReplyAsync(Sentences.PrefixSet(Context.Guild.Id, "none"));
+                await ReplyAsync(Sentences.PrefixSet(Context.Guild.Id, Sentences.None(Context.Guild.Id)));
             }
             else
             {

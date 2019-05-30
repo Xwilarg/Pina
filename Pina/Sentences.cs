@@ -29,6 +29,7 @@ namespace Pina
         public static string VerbositySet(ulong? guildId, string verbosity) => Translate(guildId, "verbositySet", verbosity);
         public static string WhitelistSet(ulong? guildId, string roles) => Translate(guildId, "whitelistSet", roles);
         public static string WhitelistUnset(ulong? guildId) => Translate(guildId, "whitelistUnset");
+        public static string None(ulong? guildId) => Translate(guildId, "none");
 
         public static string WhitelistError(ulong? guildId) => Translate(guildId, "whitelistError");
 
