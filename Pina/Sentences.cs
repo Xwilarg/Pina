@@ -44,5 +44,6 @@ namespace Pina
         public static string HelpCommunication(ulong? guildId) => Translate(guildId, "helpCommunication");
         public static string HelpGdpr(ulong? guildId) => Translate(guildId, "helpGdpr");
         public static string HelpInfo(ulong? guildId) => Translate(guildId, "helpInfo");
+        public static string HelpInvite(ulong? guildId) => Translate(guildId, "helpInvite");
     }
 }
