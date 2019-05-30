@@ -1,7 +1,9 @@
-﻿using Newtonsoft.Json;
+﻿using Discord;
+using Newtonsoft.Json;
 using RethinkDb.Driver;
 using RethinkDb.Driver.Net;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Pina
@@ -28,7 +30,7 @@ namespace Pina
         }
 
         private const string defaultLanguage = "en";
-        private const string defaultVebosity = "info";
+        private const string defaultVebosity = "error";
         private const string defaultWhitelist = "0";
         private const string defaultPrefix = "p.";
 
@@ -65,9 +67,57 @@ namespace Pina
             UpdateLanguage(guildId, language);
         }
 
-        public string GetLanguage(ulong guildId)
+        public async Task SetPrefix(ulong guildId, string prefix)
         {
-            return (guildsLanguage[guildId]);
+            await R.Db(dbName).Table("Guilds").Update(R.HashMap("id", guildId.ToString())
+                .With("prefix", prefix)
+                ).RunAsync(conn);
+            UpdatePrefix(guildId, prefix);
+        }
+
+        public async Task SetVerbosity(ulong guildId, string verbosity)
+        {
+            await R.Db(dbName).Table("Guilds").Update(R.HashMap("id", guildId.ToString())
+                .With("verbosity", verbosity)
+                ).RunAsync(conn);
+            UpdateVerbosity(guildId, verbosity);
+        }
+
+        public async Task SetWhitelist(ulong guildId, string whitelist)
+        {
+            await R.Db(dbName).Table("Guilds").Update(R.HashMap("id", guildId.ToString())
+                .With("whitelist", whitelist)
+                ).RunAsync(conn);
+            UpdateVerbosity(guildId, whitelist);
+        }
+
+        public string GetLanguage(ulong? guildId)
+            => guildId == null ? defaultLanguage : guildsLanguage[guildId.Value];
+
+        public string GetPrefix(ulong? guildId)
+            => guildsLanguage == null ? defaultPrefix : guildsPrefix[guildId.Value];
+
+        public Verbosity GetVerbosity(ulong? guildId)
+        {
+            string str = guildId == null ? defaultVebosity : guildsVerbosity[guildId.Value];
+            if (str == "none")
+                return Verbosity.None;
+            else if (str == "error")
+                return Verbosity.Error;
+            else
+                return Verbosity.Info;
+        }
+
+        public bool IsWhitelisted(ulong? guildId, IUser user)
+        {
+            if (guildId == null)
+                return true;
+            string value = guildsWhitelist[guildId.Value];
+            if (value == "0")
+                return true;
+            IGuildUser guildUser = (IGuildUser)user;
+            string[] allRoles = value.Split('|');
+            return guildUser.RoleIds.Any(x => allRoles.Contains(x.ToString()));
         }
 
         private void UpdateLanguage(ulong guildId, string value)
@@ -92,6 +142,13 @@ namespace Pina
 
         public async Task<string> GetGuildAsync(ulong guildId)
             => JsonConvert.SerializeObject(await R.Db(dbName).Table("Guilds").Get(guildId.ToString()).RunAsync(conn));
+
+        public enum Verbosity
+        {
+            None,
+            Error,
+            Info
+        }
 
         private Dictionary<ulong, string> guildsLanguage;
         private Dictionary<ulong, string> guildsVerbosity;
