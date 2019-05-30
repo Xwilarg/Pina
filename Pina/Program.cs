@@ -23,6 +23,11 @@ namespace Pina
 
         private string statsWebsite, statsToken;
 
+        private Db db;
+
+        public Db GetDb()
+            => db;
+
         private Program()
         {
             P = this;
@@ -44,17 +49,28 @@ namespace Pina
             statsWebsite = json.statsWebsite;
             statsToken = json.statsToken;
 
+            db = new Db();
+            await db.InitAsync();
+
             client.MessageReceived += HandleCommandAsync;
             client.ReactionAdded += ReactionAdded;
+            client.GuildAvailable += InitGuild;
+            client.JoinedGuild += InitGuild;
 
             await commands.AddModuleAsync<CommunicationModule>(null);
             await commands.AddModuleAsync<PinModule>(null);
+            await commands.AddModuleAsync<SettingsModule>(null);
 
             await client.LoginAsync(TokenType.Bot, (string)json.botToken);
             StartTime = DateTime.Now;
             await client.StartAsync();
 
             await Task.Delay(-1);
+        }
+
+        private async Task InitGuild(SocketGuild guild)
+        {
+            await db.InitGuildAsync(guild.Id);
         }
 
         public async Task PinMessageAsync(IMessage msg)

@@ -29,5 +29,16 @@ namespace Pina
                     "Do the 'Pin' command followed by the ID of the message you want to pin"
             }.Build());
         }
+
+        [Command("GDPR"), Summary("Show infos the bot have about the user and the guild")]
+        public async Task GDPR(params string[] command)
+        {
+            await ReplyAsync("", false, new EmbedBuilder()
+            {
+                Color = Color.Blue,
+                Title = "Data saved about " + Context.Guild.Name,
+                Description = await Program.P.GetDb().GetGuildAsync(Context.Guild.Id)
+            }.Build());
+        }
     }
 }
