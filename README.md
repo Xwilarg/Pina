@@ -15,6 +15,9 @@ Thanks to this bot, anyone is now able to pin message by writing p.pin or by add
 **Gdpr**: Display the information I have about this guild
 **Info**: Display various information about me
 
+## Invite Pina in your server
+Just click [here](https://discordapp.com/oauth2/authorize?client_id=583314556848308261&permissions=10240&scope=bot)
+
 ## Translate Pina in your own language
 If you want to translate Pina in your language please follow the steps as described in the [translation submodule](https://github.com/Xwilarg/Pina-translations/blob/master/CONTRIBUTING.md).
 
