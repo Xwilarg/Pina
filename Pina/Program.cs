@@ -1,5 +1,6 @@
 ﻿using Discord;
 using Discord.Commands;
+using Discord.Net;
 using Discord.WebSocket;
 using DiscordUtils;
 using System;
@@ -33,14 +34,39 @@ namespace Pina
         private async Task MainAsync()
         {
             client.MessageReceived += HandleCommandAsync;
+            client.ReactionAdded += ReactionAdded;
 
             await commands.AddModuleAsync<CommunicationModule>(null);
+            await commands.AddModuleAsync<PinModule>(null);
 
             await client.LoginAsync(TokenType.Bot, File.ReadAllText("Keys/token.txt"));
             StartTime = DateTime.Now;
             await client.StartAsync();
 
             await Task.Delay(-1);
+        }
+
+        public async Task PinMessageAsync(IMessage msg)
+        {
+            if (msg.IsPinned)
+                await msg.Channel.SendMessageAsync("This message was already pinned");
+            else
+            {
+                try
+                {
+                    await ((IUserMessage)msg).PinAsync();
+                }
+                catch (HttpException)
+                {
+                    await msg.Channel.SendMessageAsync("I wasn't able to pin the message, please make sure that I have the 'Manage Messages' permission.");
+                }
+            }
+        }
+
+        private async Task ReactionAdded(Cacheable<IUserMessage, ulong> msg, ISocketMessageChannel _, SocketReaction react)
+        {
+            if (react.Emote.Name == "📌" || react.Emote.Name == "📍")
+                await PinMessageAsync(await msg.GetOrDownloadAsync());
         }
 
         private async Task HandleCommandAsync(SocketMessage arg)
