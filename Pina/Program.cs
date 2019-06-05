@@ -2,6 +2,7 @@
 using Discord.Commands;
 using Discord.Net;
 using Discord.WebSocket;
+using DiscordBotsList.Api;
 using DiscordUtils;
 using Newtonsoft.Json;
 using System;
@@ -30,6 +31,9 @@ namespace Pina
         public Dictionary<string, Dictionary<string, string>> translations;
         public Dictionary<string, List<string>> translationKeyAlternate;
 
+        private AuthDiscordBotListApi dblApi;
+        private DateTime lastDiscordBotsSent;
+
         public Db GetDb()
             => db;
 
@@ -53,6 +57,11 @@ namespace Pina
                 throw new NullReferenceException("Missing botToken in Credentials file");
             statsWebsite = json.statsWebsite;
             statsToken = json.statsToken;
+            lastDiscordBotsSent = DateTime.MinValue;
+            if (json.dblId != null & json.dblToken != null)
+                dblApi = new AuthDiscordBotListApi(ulong.Parse((string)json.dblId), (string)json.dblToken);
+            else
+                dblApi = null;
 
             db = new Db();
             await db.InitAsync();
@@ -65,6 +74,9 @@ namespace Pina
             client.ReactionAdded += ReactionAdded;
             client.GuildAvailable += InitGuild;
             client.JoinedGuild += InitGuild;
+            client.JoinedGuild += GuildCountChange;
+            client.LeftGuild += GuildCountChange;
+            client.Connected += UpdateDiscordBots;
 
             await commands.AddModuleAsync<CommunicationModule>(null);
             await commands.AddModuleAsync<PinModule>(null);
@@ -87,6 +99,20 @@ namespace Pina
             }
 
             await Task.Delay(-1);
+        }
+
+        private async Task GuildCountChange(SocketGuild _)
+        {
+            await UpdateDiscordBots();
+        }
+
+        private async Task UpdateDiscordBots()
+        {
+            if (dblApi != null && lastDiscordBotsSent.AddMinutes(10).CompareTo(DateTime.Now) < 0)
+            {
+                lastDiscordBotsSent = DateTime.Now;
+                await dblApi.UpdateStats(client.Guilds.Count);
+            }
         }
 
         private async Task InitGuild(SocketGuild guild)
