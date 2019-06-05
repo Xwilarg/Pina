@@ -24,3 +24,6 @@ If you want to translate Pina in your language please follow the steps as descri
 ## Contact me
 Have any question ?<br/>
 You can either contact me on Discord (Zirk#0001) or by mail ([xwilarg@yahoo.fr](mailto:xwilarg@yahoo.fr)).
+
+## Anything else ?
+Yes, Pina is also released on dicordbots.org so go check [her page](https://discordbots.org/bot/583314556848308261).
