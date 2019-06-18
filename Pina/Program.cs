@@ -93,7 +93,8 @@ namespace Pina
                     for (;;)
                     {
                         await Task.Delay(60000);
-                        await Utils.WebsiteUpdate("Pina", statsWebsite, statsToken, "serverCount", client.Guilds.Count.ToString());
+                        if (client.ConnectionState == ConnectionState.Connected)
+                            await Utils.WebsiteUpdate("Pina", statsWebsite, statsToken, "serverCount", client.Guilds.Count.ToString());
                     }
                 });
             }
