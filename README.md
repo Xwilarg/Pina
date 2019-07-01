@@ -7,8 +7,8 @@ However that include the ability to delete messages so it can be a bit risky to 
 Thanks to this bot, anyone is now able to pin message by writing p.pin or by adding 📌 emote to the corresponding message.
 
 ## Command list
-**Pin**: Pin a message<br/>
-**Unpin**: Unpin a message<br/>
+**Pin [(optionnal) message/user ID]**: Pin a message<br/>
+**Unpin [message ID]**: Unpin a message<br/>
 **Language [language name]**: Set my speaking language<br/>
 **Verbosity [none/error/info]**: Set if I say something or not when something occur<br/>
 **Whitelist [(optionnal)roles]**: Set the roles that can pin messages, don't write anything for all<br/>
