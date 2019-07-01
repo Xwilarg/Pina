@@ -8,6 +8,27 @@ namespace Pina
 {
     class PinModule : ModuleBase
     {
+        [Command("Unpin", RunMode = RunMode.Async)]
+        private async Task Unpin(params string[] args)
+        {
+            if (args.Length == 0)
+                await ReplyAsync(Sentences.UnpinArgs(Context.Guild?.Id));
+            else
+            {
+                ulong id;
+                if (!ulong.TryParse(string.Join("", args), out id))
+                    await ReplyAsync(Sentences.InvalidId(Context.Guild?.Id));
+                else
+                {
+                    IMessage msg = (await Context.Channel.GetPinnedMessagesAsync()).FirstOrDefault(x => x.Id == id);
+                    if (msg == null)
+                        await ReplyAsync(Sentences.InvalidId(Context.Guild?.Id));
+                    else
+                        await Program.P.PinMessageAsync(msg, Context.User, Context.Guild?.Id, false, false);
+                }
+            }
+        }
+
         [Command("Pin", RunMode = RunMode.Async)]
         private async Task Pin(params string[] args)
         {
@@ -20,7 +41,11 @@ namespace Pina
                         await ReplyAsync(Sentences.NothingToPing(Context.Guild?.Id));
                 }
                 else
-                    await Program.P.PinMessageAsync(msg, Context.User,  Context.Guild?.Id, false);
+                {
+                    await Program.P.PinMessageAsync(msg, Context.User, Context.Guild?.Id, false, true);
+                    if (Program.P.GetDb().GetVerbosity(Context.Guild?.Id) == Db.Verbosity.Info)
+                        await ReplyAsync(Sentences.NothingToPing(Context.Guild?.Id));
+                }
             }
             else
             {
@@ -31,7 +56,7 @@ namespace Pina
                         await ReplyAsync(Sentences.InvalidId(Context.Guild?.Id));
                 }
                 else
-                    await Program.P.PinMessageAsync(msg, Context.User, Context.Guild?.Id, false);
+                    await Program.P.PinMessageAsync(msg, Context.User, Context.Guild?.Id, false, true);
             }
         }
 

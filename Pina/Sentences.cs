@@ -13,6 +13,7 @@ namespace Pina
         public static string NothingToPing(ulong? guildId) => Translate(guildId, "nothingToPing");
         public static string InvalidId(ulong? guildId) => Translate(guildId, "invalidId");
         public static string TooManyPins(ulong? guildId) => Translate(guildId, "tooManyPins");
+        public static string UnpinArgs(ulong? guildId) => Translate(guildId, "unpinArgs");
 
         public static string DataSavedAbout(ulong? guildId, string about) => Translate(guildId, "dataSavedAbout", about);
         public static string GdprPm(ulong? guildId) => Translate(guildId, "gdprPm");
@@ -36,6 +37,7 @@ namespace Pina
         public static string HelpIntro(ulong? guildId) => Translate(guildId, "helpIntro");
         public static string HelpPerm(ulong? guildId) => Translate(guildId, "helpPerm");
         public static string HelpPin(ulong? guildId) => Translate(guildId, "helpPin");
+        public static string HelpUnpin(ulong? guildId) => Translate(guildId, "helpUnpin");
         public static string HelpSettings(ulong? guildId) => Translate(guildId, "helpSettings");
         public static string HelpLanguage(ulong? guildId) => Translate(guildId, "helpLanguage");
         public static string HelpVerbosity(ulong? guildId) => Translate(guildId, "helpVerbosity");

@@ -24,7 +24,8 @@ namespace Pina
                 Description =
                     Sentences.HelpIntro(Context.Guild?.Id) + Environment.NewLine +
                     Sentences.HelpPerm(Context.Guild?.Id) + Environment.NewLine +
-                    Sentences.HelpPin(Context.Guild?.Id) +
+                    Sentences.HelpPin(Context.Guild?.Id) + Environment.NewLine +
+                    Sentences.HelpUnpin(Context.Guild?.Id) +
                     (Context.Guild == null ? "" : Environment.NewLine + Environment.NewLine +
                         Sentences.HelpSettings(Context.Guild.Id) + Environment.NewLine +
                         Sentences.HelpLanguage(Context.Guild.Id) + Environment.NewLine +

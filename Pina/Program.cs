@@ -121,7 +121,7 @@ namespace Pina
             await db.InitGuildAsync(guild.Id);
         }
 
-        public async Task PinMessageAsync(IMessage msg, IUser user, ulong? guildId, bool isFromEmote)
+        public async Task PinMessageAsync(IMessage msg, IUser user, ulong? guildId, bool isFromEmote, bool pin)
         {
             bool isNotInGuild = msg.Channel as ITextChannel == null;
             if (!isNotInGuild && !db.IsWhitelisted(guildId, user))
@@ -130,7 +130,7 @@ namespace Pina
                 if (db.IsErrorOrMore(db.GetVerbosity(id)))
                     await msg.Channel.SendMessageAsync((isFromEmote ? user.Mention + " " : "") + Sentences.WhitelistError(id));
             }
-            else if (msg.IsPinned)
+            else if (pin && msg.IsPinned)
             {
                 if (db.GetVerbosity(msg.Channel as ITextChannel == null ? (ulong?)null : ((ITextChannel)msg.Channel).Guild.Id) == Db.Verbosity.Info)
                     await msg.Channel.SendMessageAsync((isFromEmote ? user.Mention + " " : "") + Sentences.AlreadyPinned(guildId));
@@ -139,7 +139,10 @@ namespace Pina
             {
                 try
                 {
-                    await ((IUserMessage)msg).PinAsync();
+                    if (pin)
+                        await ((IUserMessage)msg).PinAsync();
+                    else
+                        await ((IUserMessage)msg).UnpinAsync();
                 }
                 catch (HttpException http)
                 {
@@ -160,7 +163,7 @@ namespace Pina
         {
             if (react.Emote.Name == "📌" || react.Emote.Name == "📍")
             {
-                await PinMessageAsync(await msg.GetOrDownloadAsync(), react.User.IsSpecified ? react.User.Value : null, react.Channel as ITextChannel == null ? (ulong?)null : ((ITextChannel)react.Channel).Guild.Id, true);
+                await PinMessageAsync(await msg.GetOrDownloadAsync(), react.User.IsSpecified ? react.User.Value : null, react.Channel as ITextChannel == null ? (ulong?)null : ((ITextChannel)react.Channel).Guild.Id, true, true);
                 await Utils.WebsiteUpdate("Pina", statsWebsite, statsToken, "nbMsgs", "1");
             }
         }
