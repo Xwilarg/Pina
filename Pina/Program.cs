@@ -166,6 +166,11 @@ namespace Pina
                 await PinMessageAsync(await msg.GetOrDownloadAsync(), react.User.IsSpecified ? react.User.Value : null, react.Channel as ITextChannel == null ? (ulong?)null : ((ITextChannel)react.Channel).Guild.Id, true, true);
                 await Utils.WebsiteUpdate("Pina", statsWebsite, statsToken, "nbMsgs", "1");
             }
+            else if (react.Emote.Name == "⛔" || react.Emote.Name == "🚫")
+            {
+                await PinMessageAsync(await msg.GetOrDownloadAsync(), react.User.IsSpecified ? react.User.Value : null, react.Channel as ITextChannel == null ? (ulong?)null : ((ITextChannel)react.Channel).Guild.Id, true, false);
+                await Utils.WebsiteUpdate("Pina", statsWebsite, statsToken, "nbMsgs", "1");
+            }
         }
 
         private async Task HandleCommandAsync(SocketMessage arg)
