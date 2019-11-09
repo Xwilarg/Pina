@@ -25,11 +25,14 @@ namespace Pina
         public static string InvalidLanguage(ulong? guildId, string languageList) => Translate(guildId, "invalidLanguage", languageList);
         public static string InvalidVerbosity(ulong? guildId) => Translate(guildId, "invalidVerbosity");
         public static string InvalidWhitelist(ulong? guildId, string id) => Translate(guildId, "invalidWhitelist", id);
+        public static string InvalidBlacklist(ulong? guildId, string id) => Translate(guildId, "invalidBlacklist", id);
         public static string LanguageSet(ulong? guildId, string language) => Translate(guildId, "languageSet", language);
         public static string PrefixSet(ulong? guildId, string prefix) => Translate(guildId, "prefixSet", prefix);
         public static string VerbositySet(ulong? guildId, string verbosity) => Translate(guildId, "verbositySet", verbosity);
         public static string WhitelistSet(ulong? guildId, string roles) => Translate(guildId, "whitelistSet", roles);
         public static string WhitelistUnset(ulong? guildId) => Translate(guildId, "whitelistUnset");
+        public static string BlacklistSet(ulong? guildId, string roles) => Translate(guildId, "blacklistSet", roles);
+        public static string BlacklistUnset(ulong? guildId) => Translate(guildId, "blacklistUnset");
         public static string None(ulong? guildId) => Translate(guildId, "none");
 
         public static string WhitelistError(ulong? guildId) => Translate(guildId, "whitelistError");
@@ -42,6 +45,7 @@ namespace Pina
         public static string HelpLanguage(ulong? guildId) => Translate(guildId, "helpLanguage");
         public static string HelpVerbosity(ulong? guildId) => Translate(guildId, "helpVerbosity");
         public static string HelpWhitelist(ulong? guildId) => Translate(guildId, "helpWhitelist");
+        public static string HelpBlacklist(ulong? guildId) => Translate(guildId, "helpBlacklist");
         public static string HelpPrefix(ulong? guildId) => Translate(guildId, "helpPrefix");
         public static string HelpCommunication(ulong? guildId) => Translate(guildId, "helpCommunication");
         public static string HelpGdpr(ulong? guildId) => Translate(guildId, "helpGdpr");

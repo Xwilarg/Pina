@@ -141,5 +141,39 @@ namespace Pina
                 await ReplyAsync(Sentences.WhitelistSet(Context.Guild.Id, string.Join(", ", roles.Select(x => x.Name.Replace("@everyone", "@ everyone")))));
             }
         }
+
+        [Command("Blacklist")]
+        private async Task Blacklist(params string[] args)
+        {
+            if (Context.Guild == null)
+            {
+                await ReplyAsync(Sentences.SettingsPm(null));
+            }
+            if (!CanModify(Context.User, Context.Guild.OwnerId))
+            {
+                await ReplyAsync(Sentences.SettingsNoPerm(Context.Guild.Id));
+            }
+            else if (args.Length == 0)
+            {
+                await Program.P.GetDb().SetBlacklist(Context.Guild.Id, "0");
+                await ReplyAsync(Sentences.BlacklistUnset(Context.Guild.Id));
+            }
+            else
+            {
+                List<IGuildUser> ids = new List<IGuildUser>();
+                foreach (string arg in args)
+                {
+                    IGuildUser user = await Utils.GetUser(arg, Context.Guild);
+                    if (user == null)
+                    {
+                        await ReplyAsync(Sentences.InvalidBlacklist(Context.Guild.Id, arg));
+                        return;
+                    }
+                    ids.Add(user);
+                }
+                await Program.P.GetDb().SetBlacklist(Context.Guild.Id, string.Join("|", ids.Select(x => x.Id)));
+                await ReplyAsync(Sentences.BlacklistSet(Context.Guild.Id, string.Join(", ", ids.Select(x => x.ToString()))));
+            }
+        }
     }
 }

@@ -16,6 +16,7 @@ namespace Pina
             guildsLanguage = new Dictionary<ulong, string>();
             guildsVerbosity = new Dictionary<ulong, string>();
             guildsWhitelist = new Dictionary<ulong, string>();
+            guildsBlacklist = new Dictionary<ulong, string>();
             guildsPrefix = new Dictionary<ulong, string>();
         }
 
@@ -42,11 +43,13 @@ namespace Pina
                    .With("language", defaultLanguage)
                    .With("verbosity", defaultVebosity)
                    .With("whitelist", defaultWhitelist)
+                   .With("backlist", defaultWhitelist)
                    .With("prefix", defaultPrefix)
                     ).RunAsync(conn);
                 UpdateLanguage(guildId, defaultLanguage);
                 UpdateVerbosity(guildId, defaultVebosity);
                 UpdateWhitelist(guildId, defaultWhitelist);
+                UpdateBlacklist(guildId, defaultWhitelist);
                 UpdatePrefix(guildId, defaultPrefix);
             }
             else
@@ -56,6 +59,8 @@ namespace Pina
                 UpdateVerbosity(guildId, (string)json.verbosity);
                 UpdateWhitelist(guildId, (string)json.whitelist);
                 UpdatePrefix(guildId, (string)json.prefix);
+                var blacklist = (string)json.blacklist;
+                UpdateBlacklist(guildId, blacklist ?? "0");
             }
         }
 
@@ -91,6 +96,14 @@ namespace Pina
             UpdateWhitelist(guildId, whitelist);
         }
 
+        public async Task SetBlacklist(ulong guildId, string blacklist)
+        {
+            await R.Db(dbName).Table("Guilds").Update(R.HashMap("id", guildId.ToString())
+                .With("blacklist", blacklist)
+                ).RunAsync(conn);
+            UpdateBlacklist(guildId, blacklist);
+        }
+
         public bool IsErrorOrMore(Verbosity v)
             => v == Verbosity.Error || v == Verbosity.Info;
 
@@ -123,6 +136,18 @@ namespace Pina
             return guildUser.RoleIds.Any(x => allRoles.Contains(x.ToString()));
         }
 
+        public bool IsBlacklisted(ulong? guildId, IUser user)
+        {
+            if (guildId == null)
+                return false;
+            string value = guildsBlacklist[guildId.Value];
+            if (value == "0")
+                return false;
+            IGuildUser guildUser = (IGuildUser)user;
+            string[] allUsers = value.Split('|');
+            return allUsers.Contains(guildUser.Id.ToString());
+        }
+
         private void UpdateLanguage(ulong guildId, string value)
             => UpdateDictionary(guildId, value, guildsLanguage);
 
@@ -131,6 +156,9 @@ namespace Pina
 
         private void UpdateWhitelist(ulong guildId, string value)
             => UpdateDictionary(guildId, value, guildsWhitelist);
+
+        private void UpdateBlacklist(ulong guildId, string value)
+            => UpdateDictionary(guildId, value, guildsBlacklist);
 
         private void UpdatePrefix(ulong guildId, string value)
             => UpdateDictionary(guildId, value, guildsPrefix);
@@ -156,6 +184,7 @@ namespace Pina
         private Dictionary<ulong, string> guildsLanguage;
         private Dictionary<ulong, string> guildsVerbosity;
         private Dictionary<ulong, string> guildsWhitelist;
+        private Dictionary<ulong, string> guildsBlacklist;
         private Dictionary<ulong, string> guildsPrefix;
 
         private RethinkDB R;

@@ -124,7 +124,7 @@ namespace Pina
         public async Task PinMessageAsync(IMessage msg, IUser user, ulong? guildId, bool isFromEmote, bool pin)
         {
             bool isNotInGuild = msg.Channel as ITextChannel == null;
-            if (!isNotInGuild && !db.IsWhitelisted(guildId, user))
+            if (!isNotInGuild && (!db.IsWhitelisted(guildId, user) || db.IsBlacklisted(guildId, user)))
             {
                 ulong id = ((ITextChannel)msg.Channel).Guild.Id;
                 if (db.IsErrorOrMore(db.GetVerbosity(id)))
