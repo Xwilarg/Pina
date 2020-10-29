@@ -175,5 +175,28 @@ namespace Pina
                 await ReplyAsync(Sentences.BlacklistSet(Context.Guild.Id, string.Join(", ", ids.Select(x => x.ToString()))));
             }
         }
+
+        [Command("BotInteract"), Alias("BotInteract")]
+        private async Task BotInteract([Remainder]string args)
+        {
+            args = args?.ToLower();
+            if (Context.Guild == null)
+            {
+                await ReplyAsync(Sentences.SettingsPm(null));
+            }
+            if (!CanModify(Context.User, Context.Guild.OwnerId))
+            {
+                await ReplyAsync(Sentences.SettingsNoPerm(Context.Guild.Id));
+            }
+            else if (args != "true" && args != "false")
+            {
+                await ReplyAsync("You must provide 'true' or 'false' as an argument.");
+            }
+            else
+            {
+                await Program.P.GetDb().SetCanBotInteract(Context.Guild.Id, args == "true");
+                await ReplyAsync("Your preferences were updated");
+            }
+        }
     }
 }

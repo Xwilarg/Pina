@@ -176,7 +176,7 @@ namespace Pina
         private async Task HandleCommandAsync(SocketMessage arg)
         {
             SocketUserMessage msg = arg as SocketUserMessage;
-            if (msg == null || arg.Author.IsBot) return;
+            if (msg == null || (arg.Author.IsBot && !db.IsCanBotInteract(msg.Channel is ITextChannel textChan ? textChan.GuildId : (ulong?)null))) return;
             int pos = 0;
             if (msg.HasMentionPrefix(client.CurrentUser, ref pos) || msg.HasStringPrefix(db.GetPrefix(msg.Channel as ITextChannel == null ? (ulong?)null : ((ITextChannel)msg.Channel).Guild.Id), ref pos))
             {

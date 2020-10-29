@@ -34,6 +34,7 @@ namespace Pina
         private const string defaultVebosity = "error";
         private const string defaultWhitelist = "0";
         private const string defaultPrefix = "p.";
+        public const bool defaultCanBotInteract = false;
 
         public async Task InitGuildAsync(ulong guildId)
         {
@@ -45,12 +46,14 @@ namespace Pina
                    .With("whitelist", defaultWhitelist)
                    .With("backlist", defaultWhitelist)
                    .With("prefix", defaultPrefix)
+                   .With("canBotInteract", defaultCanBotInteract)
                     ).RunAsync(conn);
                 UpdateLanguage(guildId, defaultLanguage);
                 UpdateVerbosity(guildId, defaultVebosity);
                 UpdateWhitelist(guildId, defaultWhitelist);
                 UpdateBlacklist(guildId, defaultWhitelist);
                 UpdatePrefix(guildId, defaultPrefix);
+                UpdateCanBotInteract(guildId, defaultCanBotInteract);
             }
             else
             {
@@ -60,7 +63,9 @@ namespace Pina
                 UpdateWhitelist(guildId, (string)json.whitelist);
                 UpdatePrefix(guildId, (string)json.prefix);
                 var blacklist = (string)json.blacklist;
-                UpdateBlacklist(guildId, blacklist ?? "0");
+                UpdateBlacklist(guildId, blacklist ?? defaultWhitelist);
+                var canBotInteract = (bool?)json.canBotInteract;
+                UpdateCanBotInteract(guildId, canBotInteract ?? defaultCanBotInteract);
             }
         }
 
@@ -102,6 +107,14 @@ namespace Pina
                 .With("blacklist", blacklist)
                 ).RunAsync(conn);
             UpdateBlacklist(guildId, blacklist);
+        }
+
+        public async Task SetCanBotInteract(ulong guildId, bool value)
+        {
+            await R.Db(dbName).Table("Guilds").Update(R.HashMap("id", guildId.ToString())
+                .With("canBotInteract", value)
+                ).RunAsync(conn);
+            UpdateCanBotInteract(guildId, value);
         }
 
         public bool IsErrorOrMore(Verbosity v)
@@ -148,6 +161,14 @@ namespace Pina
             return allUsers.Contains(guildUser.Id.ToString());
         }
 
+        public bool IsCanBotInteract(ulong? guildId)
+        {
+            if (guildId == null || !guildsCanBotInteract.ContainsKey(guildId.Value))
+                return false;
+            var value = guildsCanBotInteract[guildId.Value];
+            return value;
+        }
+
         private void UpdateLanguage(ulong guildId, string value)
             => UpdateDictionary(guildId, value, guildsLanguage);
 
@@ -163,7 +184,10 @@ namespace Pina
         private void UpdatePrefix(ulong guildId, string value)
             => UpdateDictionary(guildId, value, guildsPrefix);
 
-        private void UpdateDictionary(ulong guildId, string value, Dictionary<ulong, string> dict)
+        private void UpdateCanBotInteract(ulong guildId, bool value)
+            => UpdateDictionary(guildId, value, guildsCanBotInteract);
+
+        private void UpdateDictionary<T>(ulong guildId, T value, Dictionary<ulong, T> dict)
         {
             if (dict.ContainsKey(guildId))
                 dict[guildId] = value;
@@ -186,6 +210,7 @@ namespace Pina
         private Dictionary<ulong, string> guildsWhitelist;
         private Dictionary<ulong, string> guildsBlacklist;
         private Dictionary<ulong, string> guildsPrefix;
+        private Dictionary<ulong, bool> guildsCanBotInteract;
 
         private RethinkDB R;
         private Connection conn;
