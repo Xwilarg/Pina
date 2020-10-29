@@ -18,6 +18,7 @@ namespace Pina
             guildsWhitelist = new Dictionary<ulong, string>();
             guildsBlacklist = new Dictionary<ulong, string>();
             guildsPrefix = new Dictionary<ulong, string>();
+            guildsCanBotInteract = new Dictionary<ulong, bool>();
         }
 
         public async Task InitAsync(string dbName = "Pina")
