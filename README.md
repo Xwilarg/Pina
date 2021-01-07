@@ -4,7 +4,7 @@ A Discord bot that allow anyone to pin messages in your server
 ## Why would I need a bot for that ?
 If you want users to pin message, they must have the "Manage Messages" permission.<br/>
 However that include the ability to delete messages so it can be a bit risky to give it to everyone.<br/>
-Thanks to this bot, anyone is now able to pin message by writing p.pin or by adding 📌 emote to the corresponding message.
+Thanks to this bot, anyone is now able to pin message by writing p.pin or by adding ?? emote to the corresponding message.
 
 ## Command list
 **Pin [(optionnal) message/user ID]**: Pin a message<br/>
@@ -14,7 +14,8 @@ Thanks to this bot, anyone is now able to pin message by writing p.pin or by add
 **Whitelist [(optionnal)roles]**: Set the roles that can pin messages, don't write anything for all<br/>
 **Prefix [(optionnal)prefix]**: Set the prefix for bot command, don't write anything to allow the use of command without one<br/>
 **Gdpr**: Display the information I have about this guild<br/>
-**Info**: Display various information about me
+**Info**: Display various information about me<br/>
+You can also pin message by adding the ?? or ?? reaction to a message, and unpin them by adding a ? or ?? reaction
 
 ## Invite Pina in your server
 Just click [here](https://discordapp.com/oauth2/authorize?client_id=583314556848308261&permissions=10240&scope=bot)
