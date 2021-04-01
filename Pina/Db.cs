@@ -45,7 +45,7 @@ namespace Pina
                    .With("language", defaultLanguage)
                    .With("verbosity", defaultVebosity)
                    .With("whitelist", defaultWhitelist)
-                   .With("backlist", defaultWhitelist)
+                   .With("blacklist", defaultWhitelist)
                    .With("prefix", defaultPrefix)
                    .With("canBotInteract", defaultCanBotInteract)
                     ).RunAsync(conn);
