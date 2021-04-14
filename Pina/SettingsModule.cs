@@ -198,5 +198,29 @@ namespace Pina
                 await ReplyAsync("Your preferences were updated");
             }
         }
+
+        [Command("VoteRequired"), Alias("VotesRequired")]
+        private async Task VoteRequired([Remainder] string args)
+        {
+            args = args?.ToLower();
+            if (Context.Guild == null)
+            {
+                await ReplyAsync(Sentences.SettingsPm(null));
+            }
+            if (!CanModify(Context.User, Context.Guild.OwnerId))
+            {
+                await ReplyAsync(Sentences.SettingsNoPerm(Context.Guild.Id));
+            }
+            int value;
+            if (!int.TryParse(args, out value) || value < 0)
+            {
+                await ReplyAsync("You must provide a positive number as argument.");
+            }
+            else
+            {
+                await Program.P.GetDb().SetBotVotesRequired(Context.Guild.Id, value);
+                await ReplyAsync("Your preferences were updated");
+            }
+        }
     }
 }

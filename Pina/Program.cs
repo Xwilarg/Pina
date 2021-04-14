@@ -19,7 +19,7 @@ namespace Pina
             => await new Program().MainAsync();
 
         public readonly DiscordSocketClient client;
-        private readonly CommandService commands = new CommandService();
+        private readonly CommandService commands = new();
 
         public DateTime StartTime { private set; get; }
         public static Program P { private set; get; }
@@ -146,14 +146,14 @@ namespace Pina
                 }
                 catch (HttpException http)
                 {
-                    if (db.IsErrorOrMore(db.GetVerbosity(isNotInGuild ? (ulong?)null : ((ITextChannel)msg.Channel).Guild.Id)))
+                    if (db.IsErrorOrMore(db.GetVerbosity(isNotInGuild ? null : ((ITextChannel)msg.Channel).Guild.Id)))
                     {
                         if (http.HttpCode == HttpStatusCode.Forbidden)
                             await msg.Channel.SendMessageAsync((isFromEmote ? user.Mention + " " : "") + Sentences.MissingPermission(guildId));
                         else if (http.HttpCode == HttpStatusCode.BadRequest)
                             await msg.Channel.SendMessageAsync((isFromEmote ? user.Mention + " " : "") + Sentences.TooManyPins(guildId));
                         else
-                            throw http;
+                            throw;
                     }
                 }
             }
@@ -163,12 +163,12 @@ namespace Pina
         {
             if (react.Emote.Name == "📌" || react.Emote.Name == "📍")
             {
-                await PinMessageAsync(await msg.GetOrDownloadAsync(), react.User.IsSpecified ? react.User.Value : null, react.Channel as ITextChannel == null ? (ulong?)null : ((ITextChannel)react.Channel).Guild.Id, true, true);
+                await PinMessageAsync(await msg.GetOrDownloadAsync(), react.User.IsSpecified ? react.User.Value : null, react.Channel as ITextChannel == null ? null : ((ITextChannel)react.Channel).Guild.Id, true, true);
                 await Utils.WebsiteUpdate("Pina", statsWebsite, statsToken, "nbMsgs", "1");
             }
             else if (react.Emote.Name == "⛔" || react.Emote.Name == "🚫")
             {
-                await PinMessageAsync(await msg.GetOrDownloadAsync(), react.User.IsSpecified ? react.User.Value : null, react.Channel as ITextChannel == null ? (ulong?)null : ((ITextChannel)react.Channel).Guild.Id, true, false);
+                await PinMessageAsync(await msg.GetOrDownloadAsync(), react.User.IsSpecified ? react.User.Value : null, react.Channel as ITextChannel == null ? null : ((ITextChannel)react.Channel).Guild.Id, true, false);
                 await Utils.WebsiteUpdate("Pina", statsWebsite, statsToken, "nbMsgs", "1");
             }
         }
@@ -176,7 +176,7 @@ namespace Pina
         private async Task HandleCommandAsync(SocketMessage arg)
         {
             SocketUserMessage msg = arg as SocketUserMessage;
-            if (msg == null || (arg.Author.IsBot && !db.IsCanBotInteract(msg.Channel is ITextChannel textChan ? textChan.GuildId : (ulong?)null))) return;
+            if (msg == null || (arg.Author.IsBot && !db.IsCanBotInteract(msg.Channel is ITextChannel textChan ? textChan.GuildId : null))) return;
             int pos = 0;
             if (msg.HasMentionPrefix(client.CurrentUser, ref pos) || msg.HasStringPrefix(db.GetPrefix(msg.Channel as ITextChannel == null ? (ulong?)null : ((ITextChannel)msg.Channel).Guild.Id), ref pos))
             {

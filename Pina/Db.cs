@@ -19,6 +19,7 @@ namespace Pina
             guildsBlacklist = new Dictionary<ulong, string>();
             guildsPrefix = new Dictionary<ulong, string>();
             guildsCanBotInteract = new Dictionary<ulong, bool>();
+            guildsVotesRequired = new Dictionary<ulong, int>();
         }
 
         public async Task InitAsync(string dbName = "Pina")
@@ -55,6 +56,7 @@ namespace Pina
                 UpdateBlacklist(guildId, defaultWhitelist);
                 UpdatePrefix(guildId, defaultPrefix);
                 UpdateCanBotInteract(guildId, defaultCanBotInteract);
+                UpdateBotVotesRequired(guildId, 1);
             }
             else
             {
@@ -67,6 +69,8 @@ namespace Pina
                 UpdateBlacklist(guildId, blacklist ?? defaultWhitelist);
                 var canBotInteract = (bool?)json.canBotInteract;
                 UpdateCanBotInteract(guildId, canBotInteract ?? defaultCanBotInteract);
+                var votesRequired = (int?)json.votesRequired;
+                UpdateBotVotesRequired(guildId, votesRequired ?? 1);
             }
         }
 
@@ -116,6 +120,14 @@ namespace Pina
                 .With("canBotInteract", value)
                 ).RunAsync(conn);
             UpdateCanBotInteract(guildId, value);
+        }
+
+        public async Task SetBotVotesRequired(ulong guildId, int value)
+        {
+            await R.Db(dbName).Table("Guilds").Update(R.HashMap("id", guildId.ToString())
+                .With("votesRequired", value)
+                ).RunAsync(conn);
+            UpdateBotVotesRequired(guildId, value);
         }
 
         public bool IsErrorOrMore(Verbosity v)
@@ -170,6 +182,13 @@ namespace Pina
             return value;
         }
 
+        public int GetVotesRequired(ulong? guildId)
+        {
+            if (guildId == null || !guildsVotesRequired.ContainsKey(guildId.Value))
+                return 1;
+            return guildsVotesRequired[guildId.Value];
+        }
+
         private void UpdateLanguage(ulong guildId, string value)
             => UpdateDictionary(guildId, value, guildsLanguage);
 
@@ -187,6 +206,9 @@ namespace Pina
 
         private void UpdateCanBotInteract(ulong guildId, bool value)
             => UpdateDictionary(guildId, value, guildsCanBotInteract);
+
+        private void UpdateBotVotesRequired(ulong guildId, int value)
+            => UpdateDictionary(guildId, value, guildsVotesRequired);
 
         private void UpdateDictionary<T>(ulong guildId, T value, Dictionary<ulong, T> dict)
         {
@@ -212,6 +234,7 @@ namespace Pina
         private Dictionary<ulong, string> guildsBlacklist;
         private Dictionary<ulong, string> guildsPrefix;
         private Dictionary<ulong, bool> guildsCanBotInteract;
+        private Dictionary<ulong, int> guildsVotesRequired;
 
         private RethinkDB R;
         private Connection conn;
