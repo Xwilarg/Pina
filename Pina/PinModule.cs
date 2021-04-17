@@ -12,17 +12,17 @@ namespace Pina
         private async Task Unpin(params string[] args)
         {
             if (args.Length == 0)
-                await ReplyAsync(Sentences.UnpinArgs(Context.Guild?.Id));
+                await ReplyAsync("You must give the ID of the message you want to unpin.");
             else
             {
                 ulong id;
                 if (!ulong.TryParse(string.Join("", args), out id))
-                    await ReplyAsync(Sentences.InvalidId(Context.Guild?.Id));
+                    await ReplyAsync("I didn't find any message with this id.");
                 else
                 {
                     IMessage msg = (await Context.Channel.GetPinnedMessagesAsync()).FirstOrDefault(x => x.Id == id);
                     if (msg == null)
-                        await ReplyAsync(Sentences.InvalidId(Context.Guild?.Id));
+                        await ReplyAsync("I didn't find any message with this id.");
                     else
                         await Program.P.PinMessageAsync(msg, Context.User, Context.Guild?.Id, false, false);
                 }
@@ -38,13 +38,13 @@ namespace Pina
                 if (msg == null)
                 {
                     if (Program.P.GetDb().IsErrorOrMore(Program.P.GetDb().GetVerbosity(Context.Guild?.Id)))
-                        await ReplyAsync(Sentences.NothingToPing(Context.Guild?.Id));
+                        await ReplyAsync("There is nothing to pin.");
                 }
                 else
                 {
                     await Program.P.PinMessageAsync(msg, Context.User, Context.Guild?.Id, false, true);
                     if (Program.P.GetDb().GetVerbosity(Context.Guild?.Id) == Db.Verbosity.Info)
-                        await ReplyAsync(Sentences.NothingToPing(Context.Guild?.Id));
+                        await ReplyAsync("There is nothing to pin.");
                 }
             }
             else
@@ -53,7 +53,7 @@ namespace Pina
                 if (msg == null)
                 {
                     if (Program.P.GetDb().IsErrorOrMore(Program.P.GetDb().GetVerbosity(Context.Guild?.Id)))
-                        await ReplyAsync(Sentences.InvalidId(Context.Guild?.Id));
+                        await ReplyAsync("I didn't find any message with this id.");
                 }
                 else
                     await Program.P.PinMessageAsync(msg, Context.User, Context.Guild?.Id, false, true);

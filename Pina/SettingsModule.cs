@@ -17,66 +17,27 @@ namespace Pina
             return guildUser.GuildPermissions.ManageGuild;
         }
 
-        [Command("Language")]
-        private async Task Language(params string[] args)
-        {
-            if (Context.Guild == null)
-            {
-                await ReplyAsync(Sentences.SettingsPm(null));
-                return;
-            }
-            if (!CanModify(Context.User, Context.Guild.OwnerId))
-            {
-                await ReplyAsync(Sentences.SettingsNoPerm(Context.Guild.Id));
-                return;
-            }
-            if (args.Length == 0)
-            {
-                await ReplyAsync(Sentences.LanguageHelp(Context.Guild.Id, string.Join(", ", Program.P.translationKeyAlternate.Select(x => x.Value[1]))));
-                return;
-            }
-            string userInput = args[0].ToLower();
-            string language = null;
-            if (Program.P.translationKeyAlternate.ContainsKey(userInput))
-                language = userInput;
-            foreach (var l in Program.P.translationKeyAlternate)
-            {
-                if (l.Value.Contains(userInput))
-                {
-                    language = l.Key;
-                    break;
-                }
-            }
-            if (language == null)
-                await ReplyAsync(Sentences.InvalidLanguage(Context.Guild.Id, string.Join(", ", Program.P.translationKeyAlternate.Select(x => x.Value[1]))));
-            else
-            {
-                await Program.P.GetDb().SetLanguageAsync(Context.Guild.Id, language);
-                await ReplyAsync(Sentences.LanguageSet(Context.Guild.Id, Program.P.translationKeyAlternate[language][1]));
-            }
-        }
-
         [Command("Prefix")]
         private async Task Prefix(params string[] args)
         {
             if (Context.Guild == null)
             {
-                await ReplyAsync(Sentences.SettingsPm(null));
+                await ReplyAsync("This command is only available in a guild.");
             }
             if (!CanModify(Context.User, Context.Guild.OwnerId))
             {
-                await ReplyAsync(Sentences.SettingsNoPerm(Context.Guild.Id));
+                await ReplyAsync("You don't have the permission to do this command.");
             }
             else if (args.Length == 0)
             {
                 await Program.P.GetDb().SetPrefix(Context.Guild.Id, "");
-                await ReplyAsync(Sentences.PrefixSet(Context.Guild.Id, Sentences.None(Context.Guild.Id)));
+                await ReplyAsync("Your prefix was unset");
             }
             else
             {
                 string prefix = args[0];
                 await Program.P.GetDb().SetPrefix(Context.Guild.Id, prefix);
-                await ReplyAsync(Sentences.PrefixSet(Context.Guild.Id, prefix));
+                await ReplyAsync($"Your prefix was set to {prefix}.");
             }
         }
 
@@ -85,25 +46,25 @@ namespace Pina
         {
             if (Context.Guild == null)
             {
-                await ReplyAsync(Sentences.SettingsPm(null));
+                await ReplyAsync("This command is only available in a guild.");
             }
             if (!CanModify(Context.User, Context.Guild.OwnerId))
             {
-                await ReplyAsync(Sentences.SettingsNoPerm(Context.Guild.Id));
+                await ReplyAsync("You don't have the permission to do this command.");
             }
             else if (args.Length == 0)
             {
-                await ReplyAsync(Sentences.VerbosityHelp(Context.Guild.Id));
+                await ReplyAsync("You must provide a verbosity between none, error and info");
             }
             else
             {
                 string verbosity = args[0].ToLower();
                 if (verbosity != "none" && verbosity != "error" && verbosity != "info")
-                    await ReplyAsync(Sentences.InvalidVerbosity(Context.Guild.Id));
+                    await ReplyAsync("The selected verbosity must be none, error or info.");
                 else
                 {
                     await Program.P.GetDb().SetVerbosity(Context.Guild.Id, verbosity);
-                    await ReplyAsync(Sentences.VerbositySet(Context.Guild.Id, verbosity));
+                    await ReplyAsync($"Your verbosity was set to {verbosity}.");
                 }
             }
         }
@@ -113,16 +74,16 @@ namespace Pina
         {
             if (Context.Guild == null)
             {
-                await ReplyAsync(Sentences.SettingsPm(null));
+                await ReplyAsync("This command is only available in a guild.");
             }
             if (!CanModify(Context.User, Context.Guild.OwnerId))
             {
-                await ReplyAsync(Sentences.SettingsNoPerm(Context.Guild.Id));
+                await ReplyAsync("You don't have the permission to do this command.");
             }
             else if (args.Length == 0)
             {
                 await Program.P.GetDb().SetWhitelist(Context.Guild.Id, "0");
-                await ReplyAsync(Sentences.WhitelistUnset(Context.Guild.Id));
+                await ReplyAsync("Your whitelist was removed.");
             }
             else
             {
@@ -132,13 +93,13 @@ namespace Pina
                     IRole role = Utils.GetRole(arg, Context.Guild);
                     if (role == null)
                     {
-                        await ReplyAsync(Sentences.InvalidWhitelist(Context.Guild.Id, arg));
+                        await ReplyAsync($"I didn't find any matching role for {arg}.");
                         return;
                     }
                     roles.Add(role);
                 }
                 await Program.P.GetDb().SetWhitelist(Context.Guild.Id, string.Join("|", roles.Select(x => x.Id)));
-                await ReplyAsync(Sentences.WhitelistSet(Context.Guild.Id, string.Join(", ", roles.Select(x => x.Name.Replace("@everyone", "@ everyone")))));
+                await ReplyAsync($"Your whitelist was set to the following roles:\n{string.Join(", ", roles.Select(x => x.Name.Replace("@everyone", "@ everyone")))}");
             }
         }
 
@@ -147,16 +108,16 @@ namespace Pina
         {
             if (Context.Guild == null)
             {
-                await ReplyAsync(Sentences.SettingsPm(null));
+                await ReplyAsync("This command is only available in a guild.");
             }
             if (!CanModify(Context.User, Context.Guild.OwnerId))
             {
-                await ReplyAsync(Sentences.SettingsNoPerm(Context.Guild.Id));
+                await ReplyAsync("You don't have the permission to do this command.");
             }
             else if (args.Length == 0)
             {
                 await Program.P.GetDb().SetBlacklist(Context.Guild.Id, "0");
-                await ReplyAsync(Sentences.BlacklistUnset(Context.Guild.Id));
+                await ReplyAsync("Your blacklist was removed.");
             }
             else
             {
@@ -166,13 +127,13 @@ namespace Pina
                     IGuildUser user = await Utils.GetUser(arg, Context.Guild);
                     if (user == null)
                     {
-                        await ReplyAsync(Sentences.InvalidBlacklist(Context.Guild.Id, arg));
+                        await ReplyAsync($"I didn't find any matching user for {arg}.");
                         return;
                     }
                     ids.Add(user);
                 }
                 await Program.P.GetDb().SetBlacklist(Context.Guild.Id, string.Join("|", ids.Select(x => x.Id)));
-                await ReplyAsync(Sentences.BlacklistSet(Context.Guild.Id, string.Join(", ", ids.Select(x => x.ToString()))));
+                await ReplyAsync($"Your blacklist was set to the following users:\n{string.Join(", ", ids.Select(x => x.ToString()))}");
             }
         }
 
@@ -182,11 +143,11 @@ namespace Pina
             args = args?.ToLower();
             if (Context.Guild == null)
             {
-                await ReplyAsync(Sentences.SettingsPm(null));
+                await ReplyAsync("This command is only available in a guild.");
             }
             if (!CanModify(Context.User, Context.Guild.OwnerId))
             {
-                await ReplyAsync(Sentences.SettingsNoPerm(Context.Guild.Id));
+                await ReplyAsync("You don't have the permission to do this command.");
             }
             else if (args != "true" && args != "false")
             {
@@ -205,11 +166,11 @@ namespace Pina
             args = args?.ToLower();
             if (Context.Guild == null)
             {
-                await ReplyAsync(Sentences.SettingsPm(null));
+                await ReplyAsync("This command is only available in a guild.");
             }
             if (!CanModify(Context.User, Context.Guild.OwnerId))
             {
-                await ReplyAsync(Sentences.SettingsNoPerm(Context.Guild.Id));
+                await ReplyAsync("You don't have the permission to do this command.");
             }
             int value;
             if (!int.TryParse(args, out value) || value < 0)

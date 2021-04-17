@@ -67,10 +67,6 @@ namespace Pina
             db = new Db();
             await db.InitAsync();
 
-            translations = new Dictionary<string, Dictionary<string, string>>();
-            translationKeyAlternate = new Dictionary<string, List<string>>();
-            Utils.InitTranslations(translations, translationKeyAlternate, "../../Pina-translations/Translations");
-
             client.MessageReceived += HandleCommandAsync;
             client.ReactionAdded += ReactionAdded;
             client.GuildAvailable += InitGuild;
@@ -135,12 +131,12 @@ namespace Pina
             {
                 ulong id = ((ITextChannel)msg.Channel).Guild.Id;
                 if (db.IsErrorOrMore(db.GetVerbosity(id)))
-                    await msg.Channel.SendMessageAsync((isFromEmote ? user.Mention + " " : "") + Sentences.WhitelistError(id));
+                    await msg.Channel.SendMessageAsync((isFromEmote ? user.Mention + " " : "") + "You aren't allowed to pin/unpin messages.");
             }
             else if (pin && msg.IsPinned)
             {
                 if (db.GetVerbosity(msg.Channel as ITextChannel == null ? (ulong?)null : ((ITextChannel)msg.Channel).Guild.Id) == Db.Verbosity.Info)
-                    await msg.Channel.SendMessageAsync((isFromEmote ? user.Mention + " " : "") + Sentences.AlreadyPinned(guildId));
+                    await msg.Channel.SendMessageAsync((isFromEmote ? user.Mention + " " : "") + "This message was already pinned.");
             }
             else
             {
@@ -203,9 +199,9 @@ namespace Pina
                     if (db.IsErrorOrMore(db.GetVerbosity(isNotInGuild ? null : ((ITextChannel)msg.Channel).Guild.Id)))
                     {
                         if (http.HttpCode == HttpStatusCode.Forbidden)
-                            await msg.Channel.SendMessageAsync((isFromEmote ? user.Mention + " " : "") + Sentences.MissingPermission(guildId));
+                            await msg.Channel.SendMessageAsync((isFromEmote ? user.Mention + " " : "") + "I wasn't able to pin the message, please make sure that I have the 'Manage Messages' permission.");
                         else if (http.HttpCode == HttpStatusCode.BadRequest)
-                            await msg.Channel.SendMessageAsync((isFromEmote ? user.Mention + " " : "") + Sentences.TooManyPins(guildId));
+                            await msg.Channel.SendMessageAsync((isFromEmote ? user.Mention + " " : "") + "You reached the pin limit for this channel.");
                         else
                             throw;
                     }
