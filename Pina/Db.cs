@@ -40,6 +40,9 @@ namespace Pina
 
         public async Task InitGuildAsync(ulong guildId)
         {
+            if (guildsLanguage.ContainsKey(guildId))
+                return;
+
             if (await R.Db(dbName).Table("Guilds").GetAll(guildId.ToString()).Count().Eq(0).RunAsync<bool>(conn))
             {
                 await R.Db(dbName).Table("Guilds").Insert(R.HashMap("id", guildId.ToString())
