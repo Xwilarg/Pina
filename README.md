@@ -9,19 +9,17 @@ Thanks to this bot, anyone is now able to pin message by writing p.pin or by add
 ## Command list
 **Pin [(optionnal) message/user ID]**: Pin a message<br/>
 **Unpin [message ID]**: Unpin a message<br/>
-**Language [language name]**: Set my speaking language<br/>
 **Verbosity [none/error/info]**: Set if I say something or not when something occur<br/>
 **Whitelist [(optionnal)roles]**: Set the roles that can pin messages, don't write anything for all<br/>
 **Prefix [(optionnal)prefix]**: Set the prefix for bot command, don't write anything to allow the use of command without one<br/>
 **Gdpr**: Display the information I have about this guild<br/>
 **Info**: Display various information about me<br/>
-You can also pin message by adding the ?? or ?? reaction to a message, and unpin them by adding a ? or ?? reaction
+**BotInteract [true/false]**: Set if other bots are allowed to do commands<br/>
+**VoteRequired [votes required]**: Set the number of people that need to vote to pin/unpin a message, set to 1 to disable<br/>
+You can also pin message by adding the 📌 reaction to a message, and unpin them by adding a ⛔ reaction
 
 ## Invite Pina in your server
 Just click [here](https://discordapp.com/oauth2/authorize?client_id=583314556848308261&permissions=10240&scope=bot)
-
-## Translate Pina in your own language
-If you want to translate Pina in your language please follow the steps as described in the [translation submodule](https://github.com/Xwilarg/Pina-translations/blob/master/CONTRIBUTING.md).
 
 ## Contact me
 Have any question ?<br/>
