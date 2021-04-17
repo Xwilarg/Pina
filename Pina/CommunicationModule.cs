@@ -32,7 +32,9 @@ namespace Pina
                         "**Verbosity [none/error/info]**: Set if I say something or not when something occur" + Environment.NewLine +
                         "**Whitelist [(optional)roles]**: Set the roles that can pin messages, don't write anything for all" + Environment.NewLine +
                         "**Blacklist [(optional)users]**: Set the users that can't pin messages, don't write anything for none" + Environment.NewLine +
-                        "**Prefix [(optional)prefix]**: Set the prefix for bot command, don't write anything to allow the use of command without one") +
+                        "**Prefix [(optional)prefix]**: Set the prefix for bot command, don't write anything to allow the use of command without one" + Environment.NewLine +
+                        "**BotInteract [true/false]**: Set if other bots are allowed to do commands" + Environment.NewLine +
+                        "**VoteRequired [number of votes required]**: Set the number of people that need to vote to pin/unpin a message, set to 1 to disable") +
                     Environment.NewLine + Environment.NewLine +
                     "You can also use these command:" + Environment.NewLine +
                     "**Gdpr**: Display the information I have about this guild" + Environment.NewLine +

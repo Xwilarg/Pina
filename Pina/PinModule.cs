@@ -43,8 +43,6 @@ namespace Pina
                 else
                 {
                     await Program.P.PinMessageAsync(msg, Context.User, Context.Guild?.Id, false, true);
-                    if (Program.P.GetDb().GetVerbosity(Context.Guild?.Id) == Db.Verbosity.Info)
-                        await ReplyAsync("There is nothing to pin.");
                 }
             }
             else

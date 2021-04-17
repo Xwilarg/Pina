@@ -161,6 +161,8 @@ namespace Pina
                                     await ((IUserMessage)msg).PinAsync();
                                 else
                                     await ((IUserMessage)msg).UnpinAsync();
+                                PinAwaiting.Remove(elem.Key);
+                                await elem.Value.Item5.DeleteAsync();
                             }
                             else
                             {
@@ -221,10 +223,10 @@ namespace Pina
                 await PinMessageAsync(await msg.GetOrDownloadAsync(), react.User.IsSpecified ? react.User.Value : null, react.Channel as ITextChannel == null ? null : ((ITextChannel)react.Channel).Guild.Id, true, false);
                 await Utils.WebsiteUpdate("Pina", statsWebsite, statsToken, "nbMsgs", "1");
             }
-            else if (react.Emote.Name == "✅" && PinAwaiting.ContainsKey(msg.Id))
+            else if (react.Emote.Name == "✅" && react.UserId != client.CurrentUser.Id && PinAwaiting.ContainsKey(msg.Id))
             {
                 var value = PinAwaiting[msg.Id];
-                if (value.Item3.Contains(react.UserId))
+                if (!value.Item3.Contains(react.UserId))
                 {
                     if (value.Item3.Count + 1 >= value.Item2)
                     {
@@ -232,6 +234,8 @@ namespace Pina
                             await ((IUserMessage)value.Item1).PinAsync();
                         else
                             await ((IUserMessage)value.Item1).UnpinAsync();
+                        PinAwaiting.Remove(msg.Id);
+                        await value.Item5.DeleteAsync();
                     }
                     else
                     {
