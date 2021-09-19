@@ -13,12 +13,13 @@ namespace Pina
         public Db()
         {
             R = RethinkDB.R;
-            guildsVerbosity = new Dictionary<ulong, string>();
-            guildsWhitelist = new Dictionary<ulong, string>();
-            guildsBlacklist = new Dictionary<ulong, string>();
-            guildsPrefix = new Dictionary<ulong, string>();
-            guildsCanBotInteract = new Dictionary<ulong, bool>();
-            guildsVotesRequired = new Dictionary<ulong, int>();
+            guildsVerbosity = new();
+            guildsWhitelist = new();
+            guildsBlacklist = new();
+            guildsPrefix = new();
+            guildsCanBotInteract = new();
+            guildsVotesRequired = new();
+            guildsCanUnpin = new();
         }
 
         public async Task InitAsync(string dbName = "Pina")
@@ -35,6 +36,7 @@ namespace Pina
         private const string defaultWhitelist = "0";
         private const string defaultPrefix = "p.";
         public const bool defaultCanBotInteract = false;
+        public const bool defaultCanUnpin = true;
 
         public async Task InitGuildAsync(ulong guildId)
         {
@@ -49,6 +51,7 @@ namespace Pina
                    .With("blacklist", defaultWhitelist)
                    .With("prefix", defaultPrefix)
                    .With("canBotInteract", defaultCanBotInteract)
+                   .With("canUnpin", defaultCanUnpin)
                     ).RunAsync(conn);
                 UpdateVerbosity(guildId, defaultVebosity);
                 UpdateWhitelist(guildId, defaultWhitelist);
@@ -56,6 +59,7 @@ namespace Pina
                 UpdatePrefix(guildId, defaultPrefix);
                 UpdateCanBotInteract(guildId, defaultCanBotInteract);
                 UpdateBotVotesRequired(guildId, 1);
+                UpdateCanUnpin(guildId, defaultCanUnpin);
             }
             else
             {
@@ -69,6 +73,8 @@ namespace Pina
                 UpdateCanBotInteract(guildId, canBotInteract ?? defaultCanBotInteract);
                 var votesRequired = (int?)json.votesRequired;
                 UpdateBotVotesRequired(guildId, votesRequired ?? 1);
+                var canUnpin = (bool?)json.canUnpin;
+                UpdateCanUnpin(guildId, canUnpin ?? defaultCanUnpin);
             }
         }
 
@@ -118,6 +124,14 @@ namespace Pina
                 .With("votesRequired", value)
                 ).RunAsync(conn);
             UpdateBotVotesRequired(guildId, value);
+        }
+
+        public async Task SetCanUnpin(ulong guildId, bool value)
+        {
+            await R.Db(dbName).Table("Guilds").Update(R.HashMap("id", guildId.ToString())
+                .With("canUnpin", value)
+                ).RunAsync(conn);
+            UpdateCanUnpin(guildId, value);
         }
 
         public bool IsErrorOrMore(Verbosity v)
@@ -176,6 +190,14 @@ namespace Pina
             return guildsVotesRequired[guildId.Value];
         }
 
+        public bool IsCanUnpin(ulong? guildId)
+        {
+            if (guildId == null || !guildsCanUnpin.ContainsKey(guildId.Value))
+                return defaultCanUnpin;
+            var value = guildsCanUnpin[guildId.Value];
+            return value;
+        }
+
         private void UpdateVerbosity(ulong guildId, string value)
             => UpdateDictionary(guildId, value, guildsVerbosity);
 
@@ -193,6 +215,9 @@ namespace Pina
 
         private void UpdateBotVotesRequired(ulong guildId, int value)
             => UpdateDictionary(guildId, value, guildsVotesRequired);
+
+        private void UpdateCanUnpin(ulong guildId, bool value)
+            => UpdateDictionary(guildId, value, guildsCanUnpin);
 
         private void UpdateDictionary<T>(ulong guildId, T value, Dictionary<ulong, T> dict)
         {
@@ -218,6 +243,7 @@ namespace Pina
         private Dictionary<ulong, string> guildsPrefix;
         private Dictionary<ulong, bool> guildsCanBotInteract;
         private Dictionary<ulong, int> guildsVotesRequired;
+        private Dictionary<ulong, bool> guildsCanUnpin;
 
         private RethinkDB R;
         private Connection conn;

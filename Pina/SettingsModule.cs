@@ -11,6 +11,8 @@ namespace Pina
     {
         public static bool CanModify(IUser user, ulong ownerId)
         {
+            if (user == null) // Not supposed to happen but still do
+                return false;
             if (user.Id == ownerId)
                 return true;
             IGuildUser guildUser = (IGuildUser)user;
@@ -180,6 +182,29 @@ namespace Pina
             else
             {
                 await Program.P.GetDb().SetBotVotesRequired(Context.Guild.Id, value);
+                await ReplyAsync("Your preferences were updated");
+            }
+        }
+
+        [Command("CanUnpin")]
+        private async Task CanUnpin([Remainder] string args)
+        {
+            args = args?.ToLower();
+            if (Context.Guild == null)
+            {
+                await ReplyAsync("This command is only available in a guild.");
+            }
+            if (!CanModify(Context.User, Context.Guild.OwnerId))
+            {
+                await ReplyAsync("You don't have the permission to do this command.");
+            }
+            else if (args != "true" && args != "false")
+            {
+                await ReplyAsync("You must provide 'true' or 'false' as an argument.");
+            }
+            else
+            {
+                await Program.P.GetDb().SetCanUnpin(Context.Guild.Id, args == "true");
                 await ReplyAsync("Your preferences were updated");
             }
         }

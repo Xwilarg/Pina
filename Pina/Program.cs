@@ -136,6 +136,12 @@ namespace Pina
                 if (db.IsErrorOrMore(db.GetVerbosity(id)))
                     await msg.Channel.SendMessageAsync((isFromEmote ? user.Mention + " " : "") + "You aren't allowed to pin/unpin messages.");
             }
+            else if (!pin && !isNotInGuild && !db.IsCanUnpin(guildId))
+            {
+                ulong id = ((ITextChannel)msg.Channel).Guild.Id;
+                if (db.GetVerbosity(id) == Db.Verbosity.Info)
+                    await msg.Channel.SendMessageAsync((isFromEmote ? user.Mention + " " : "") + "Unpin are disabled in this guild.");
+            }
             else if (pin && msg.IsPinned)
             {
                 if (db.GetVerbosity(msg.Channel as ITextChannel == null ? (ulong?)null : ((ITextChannel)msg.Channel).Guild.Id) == Db.Verbosity.Info)
