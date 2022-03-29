@@ -1,29 +1,35 @@
 # Pina
-A Discord bot that allow anyone to pin messages in your server
+A Discord bot that allows anyone to pin messages in your server.
 
-## Why would I need a bot for that ?
+## Why would I need a bot for that?
 If you want users to pin message, they must have the "Manage Messages" permission.<br/>
-However that include the ability to delete messages so it can be a bit risky to give it to everyone.<br/>
+However, that includes the ability to delete messages, so it can be a bit risky to give it to everyone.<br/>
 Thanks to this bot, anyone is now able to pin message by writing p.pin or by adding ?? emote to the corresponding message.
 
 ## Command list
-**Pin [(optionnal) message/user ID]**: Pin a message<br/>
-**Unpin [message ID]**: Unpin a message<br/>
-**Verbosity [none/error/info]**: Set if I say something or not when something occur<br/>
-**Whitelist [(optionnal)roles]**: Set the roles that can pin messages, don't write anything for all<br/>
-**Prefix [(optionnal)prefix]**: Set the prefix for bot command, don't write anything to allow the use of command without one<br/>
-**Gdpr**: Display the information I have about this guild<br/>
-**Info**: Display various information about me<br/>
-**BotInteract [true/false]**: Set if other bots are allowed to do commands<br/>
-**VoteRequired [votes required]**: Set the number of people that need to vote to pin/unpin a message, set to 1 to disable<br/>
-You can also pin message by adding the 📌 reaction to a message, and unpin them by adding a ⛔ reaction
 
-## Invite Pina in your server
-Just click [here](https://discordapp.com/oauth2/authorize?client_id=583314556848308261&permissions=10240&scope=bot)
+|Command|Description|Example|
+|:--|:--|:--|
+|`pin [(optional) message/user ID]`| Pin a message.|pin 000000000000000000|
+|`unpin [message ID]`| Unpin a message.|unpin 000000000000000000|
+|`language [language name]`| Set my speaking language.|language french|
+|`verbosity [none/error/info]`| Set if I say something or not when something occurs.|verbosity none|
+|`whitelist [(optionnal)roles]`| Set the roles that can pin messages, don't write anything for all.|whitelist @MyRole|
+|`blacklist [(optionnal)roles]`| Set the users that can't pin messages, don't write anything for none, admins are not affected by this.|blacklist @MyRole|
+|`prefix [(optional)prefix]`| Set the prefix for bot command, don't write anything to allow the use of command without one.|prefix p!|
+|`botinteract [true/false]`| Set if other bots are allowed to do commands.|botinteract false|
+|`canunpin [true/false]`| Set if users can unpin messages.|canunpin false|
+|`voterequired [votes required]`| Set the number of people that need to vote to pin/unpin a message, set to 1 to disable.<br/>You can also pin message by adding the 📌 reaction to a message, and unpin them by adding a ⛔ reaction.|voterequired 2|
+|`gdpr`| Display the information I have about this guild.||
+|`info`| Display various information about me.||
+|`invite`| Display the invite link of the bot.||
+
+## Invite Pina to your server
+Just click [here](https://discordapp.com/oauth2/authorize?client_id=583314556848308261&permissions=10240&scope=bot).
 
 ## Contact me
-Have any question ?<br/>
-You can either contact me on Discord (Zirk#0001) or by mail ([xwilarg@yahoo.fr](mailto:xwilarg@yahoo.fr)).
+Have any question?<br/>
+You can either contact me on Discord (Zirk#0001) or by Email ([xwilarg@yahoo.fr](mailto:xwilarg@yahoo.fr))
 
-## Anything else ?
-Yes, Pina is also released on dicordbots.org so go check [her page](https://discordbots.org/bot/583314556848308261).
+## Anything else?
+Yes, Pina is also released on top.gg so go check [her page](https://top.gg/bot/583314556848308261).
