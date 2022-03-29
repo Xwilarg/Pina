@@ -10,6 +10,8 @@ Thanks to this bot, anyone is now able to pin message by writing p.pin or by add
 
 |Command|Description|Example|
 |:--|:--|:--|
+|`pin [(optional) message/user ID]`| Pin a message.|pin 000000000000000000|
+|`unpin [message ID]`| Unpin a message.|unpin 000000000000000000|
 |`language [language name]`| Set my speaking language.|language french|
 |`verbosity [none/error/info]`| Set if I say something or not when something occurs.|verbosity none|
 |`whitelist [(optionnal)roles]`| Set the roles that can pin messages, don't write anything for all.|whitelist @MyRole|
@@ -21,8 +23,6 @@ Thanks to this bot, anyone is now able to pin message by writing p.pin or by add
 |`gdpr`| Display the information I have about this guild.||
 |`info`| Display various information about me.||
 |`invite`| Display the invite link of the bot.||
-|`pin [(optional) message/user ID]`| Pin a message.|pin 000000000000000000|
-|`unpin [message ID]`| Unpin a message.|unpin 000000000000000000|
 
 ## Invite Pina to your server
 Just click [here](https://discordapp.com/oauth2/authorize?client_id=583314556848308261&permissions=10240&scope=bot).
