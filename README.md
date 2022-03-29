@@ -1,9 +1,9 @@
 # Pina
-A Discord bot that allows anyone to pin messages in your server
+A Discord bot that allows anyone to pin messages in your server.
 
 ## Why would I need a bot for that?
 If you want users to pin message, they must have the "Manage Messages" permission.<br/>
-However that includes the ability to delete messages so it can be a bit risky to give it to everyone.<br/>
+However, that includes the ability to delete messages, so it can be a bit risky to give it to everyone.<br/>
 Thanks to this bot, anyone is now able to pin message by writing p.pin or by adding ?? emote to the corresponding message.
 
 ## Command list
@@ -21,7 +21,7 @@ Thanks to this bot, anyone is now able to pin message by writing p.pin or by add
 |`voterequired [votes required]`| Set the number of people that need to vote to pin/unpin a message, set to 1 to disable.<br/>You can also pin message by adding the 📌 reaction to a message, and unpin them by adding a ⛔ reaction.|voterequired 2|
 
 ## Invite Pina to your server
-Just click [here](https://discordapp.com/oauth2/authorize?client_id=583314556848308261&permissions=10240&scope=bot)
+Just click [here](https://discordapp.com/oauth2/authorize?client_id=583314556848308261&permissions=10240&scope=bot).
 
 ## Contact me
 Have any question?<br/>
