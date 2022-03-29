@@ -14,11 +14,15 @@ Thanks to this bot, anyone is now able to pin message by writing p.pin or by add
 |`unpin [message ID]`| Unpin a message.|unpin 000000000000000000|
 |`verbosity [none/error/info]`| Set if I say something or not when something occurs.|verbosity none|
 |`whitelist [(optionnal)roles]`| Set the roles that can pin messages, don't write anything for all.|whitelist @MyRole|
+|`blacklist [(optionnal)roles]`| Set the users that can't pin messages, don't write anything for none, admins are not affected by this.|blacklist @MyRole|
 |`prefix [(optional)prefix]`| Set the prefix for bot command, don't write anything to allow the use of command without one.|prefix p!|
 |`gdpr`| Display the information I have about this guild.||
 |`info`| Display various information about me.||
 |`botinteract [true/false]`| Set if other bots are allowed to do commands.|botinteract false|
 |`voterequired [votes required]`| Set the number of people that need to vote to pin/unpin a message, set to 1 to disable.<br/>You can also pin message by adding the 📌 reaction to a message, and unpin them by adding a ⛔ reaction.|voterequired 2|
+|`canunpin [true/false]`| Set if users can unpin messages.|canunpin false|
+|`invite`| Display the invite link of the bot.||
+|`language [language name]`| Set my speaking language.|language french|
 
 ## Invite Pina to your server
 Just click [here](https://discordapp.com/oauth2/authorize?client_id=583314556848308261&permissions=10240&scope=bot).
