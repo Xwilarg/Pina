@@ -28,4 +28,4 @@ Have any question?<br/>
 You can either contact me on Discord (Zirk#0001) or by mail ([xwilarg@yahoo.fr](mailto:xwilarg@yahoo.fr)).
 
 ## Anything else?
-Yes, Pina is also released on discordbots.org so go check [her page](https://discordbots.org/bot/583314556848308261).
+Yes, Pina is also released on top.gg so go check [her page](https://top.gg/bot/583314556848308261).
