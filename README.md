@@ -7,16 +7,18 @@ However that include the ability to delete messages so it can be a bit risky to 
 Thanks to this bot, anyone is now able to pin message by writing p.pin or by adding ?? emote to the corresponding message.
 
 ## Command list
-**Pin [(optionnal) message/user ID]**: Pin a message<br/>
-**Unpin [message ID]**: Unpin a message<br/>
-**Verbosity [none/error/info]**: Set if I say something or not when something occur<br/>
-**Whitelist [(optionnal)roles]**: Set the roles that can pin messages, don't write anything for all<br/>
-**Prefix [(optionnal)prefix]**: Set the prefix for bot command, don't write anything to allow the use of command without one<br/>
-**Gdpr**: Display the information I have about this guild<br/>
-**Info**: Display various information about me<br/>
-**BotInteract [true/false]**: Set if other bots are allowed to do commands<br/>
-**VoteRequired [votes required]**: Set the number of people that need to vote to pin/unpin a message, set to 1 to disable<br/>
-You can also pin message by adding the 📌 reaction to a message, and unpin them by adding a ⛔ reaction
+
+|Command|Description|Example|
+|:--|:--|:--|
+|`pin [(optional) message/user ID]`| Pin a message.|pin 000000000000000000|
+|`unpin [message ID]`| Unpin a message.|unpin 000000000000000000|
+|`verbosity [none/error/info]`| Set if I say something or not when something occurs.|verbosity none|
+|`whitelist [(optionnal)roles]`| Set the roles that can pin messages, don't write anything for all.|whitelist @MyRole|
+|`prefix [(optional)prefix]`| Set the prefix for bot command, don't write anything to allow the use of command without one.|prefix p!|
+|`gdpr`| Display the information I have about this guild.||
+|`info`| Display various information about me.||
+|`botinteract [true/false]`| Set if other bots are allowed to do commands.|botinteract false|
+|`voterequired [votes required]`| Set the number of people that need to vote to pin/unpin a message, set to 1 to disable.<br/> You can also pin message by adding the 📌 reaction to a message, and unpin them by adding a ⛔ reaction.|voterequired 2|
 
 ## Invite Pina in your server
 Just click [here](https://discordapp.com/oauth2/authorize?client_id=583314556848308261&permissions=10240&scope=bot)
