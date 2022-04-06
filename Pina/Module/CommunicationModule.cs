@@ -1,19 +1,17 @@
 ﻿using Discord;
-using Discord.Commands;
+using Pina.Command;
 using System;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
 
-namespace Pina
+namespace Pina.Module
 {
-    class CommunicationModule : ModuleBase
+    public static class CommunicationModule
     {
-
-        [Command("Info")]
-        private async Task Info()
+        public static async Task InfoAsync(ICommandContext ctx)
         {
-            await ReplyAsync(embed: new EmbedBuilder()
+            await ctx.ReplyAsync(embed: new EmbedBuilder()
             {
                 Color = Color.Purple,
                 Fields = new()
@@ -52,10 +50,9 @@ namespace Pina
             }.Build());
         }
 
-        [Command("Help")]
-        private async Task Help(params string[] _)
+        public static async Task HelpAsync(ICommandContext ctx)
         {
-            await ReplyAsync("", false, new EmbedBuilder()
+            await ctx.ReplyAsync(embed: new EmbedBuilder()
             {
                 Color = Color.Purple,
                 Title = "Help",
@@ -64,7 +61,7 @@ namespace Pina
                     "Please make sure that I have the 'Manage Messages permission (I need it to pin them)." + Environment.NewLine +
                     "You have 2 ways to do it:\nAdding a 📌 reaction to it\nDo the 'Pin' command, optionally followed by the ID of the message." + Environment.NewLine +
                     "You can also unpin messages by using the 'Unpin' command followed by the ID of the message, or by adding ⛔ to it." +
-                    (Context.Guild == null ? "" : Environment.NewLine + Environment.NewLine +
+                    (ctx.Guild == null ? "" : Environment.NewLine + Environment.NewLine +
                         "You can also change my default behaviour with these commands:" + Environment.NewLine +
                         "**Language [language name]**: Set my speaking language" + Environment.NewLine +
                         "**Verbosity [none/error/info]**: Set if I say something or not when something occur" + Environment.NewLine +
@@ -82,23 +79,21 @@ namespace Pina
             }.Build());
         }
 
-        [Command("Invite")]
-        private async Task Invite(params string[] _)
+        public static async Task InviteAsync(ICommandContext ctx)
         {
-            await ReplyAsync("<https://discordapp.com/api/oauth2/authorize?client_id=583314556848308261&permissions=10240&scope=bot>");
+            await ctx.ReplyAsync("<https://discord.com/api/oauth2/authorize?client_id=583314556848308261&scope=bot%20applications.commands>");
         }
 
-        [Command("GDPR"), Summary("Show infos the bot have about the user and the guild")]
-        public async Task GDPR(params string[] _)
+        public static async Task GdprAsync(ICommandContext ctx)
         {
-            if (Context.Guild == null)
-                await ReplyAsync("I only save data about guilds.");
+            if (ctx.Guild == null)
+                await ctx.ReplyAsync("I only save data about guilds.");
             else
-                await ReplyAsync("", false, new EmbedBuilder()
+                await ctx.ReplyAsync(embed: new EmbedBuilder()
                 {
                     Color = Color.Blue,
-                    Title = $"Data saved about {Context.Guild.Name}:",
-                    Description = await Program.P.GetDb().GetGuildAsync(Context.Guild.Id)
+                    Title = $"Data saved about {ctx.Guild.Name}:",
+                    Description = await Program.P.GetDb().GetGuildAsync(ctx.Guild.Id)
                 }.Build());
         }
     }

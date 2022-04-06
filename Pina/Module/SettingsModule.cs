@@ -1,27 +1,30 @@
 ﻿using Discord;
-using Discord.Commands;
+using Pina.Command;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Pina
+namespace Pina.Module
 {
-    public class SettingsModule : ModuleBase
+    public class SettingsModule
     {
         public static bool CanModify(IUser user, ulong ownerId)
         {
             if (user == null) // Not supposed to happen but still do
+            {
                 return false;
+            }
             if (user.Id == ownerId)
+            {
                 return true;
+            }
             IGuildUser guildUser = (IGuildUser)user;
             return guildUser.GuildPermissions.ManageGuild;
         }
 
-        [Command("Prefix")]
-        private async Task Prefix(params string[] args)
+        public async Task PrefixAsync(ICommandContext ctx)
         {
-            if (Context.Guild == null)
+            if (ctx.Guild == null)
             {
                 await ReplyAsync("This command is only available in a guild.");
             }
@@ -42,8 +45,7 @@ namespace Pina
             }
         }
 
-        [Command("Verbosity")]
-        private async Task Verbosity(params string[] args)
+        public async Task VerbosityAsync(ICommandContext ctx)
         {
             if (Context.Guild == null)
             {
@@ -70,8 +72,7 @@ namespace Pina
             }
         }
 
-        [Command("Whitelist")]
-        private async Task Whitelist(params string[] args)
+        public async Task WhitelistAsync(params string[] args)
         {
             if (Context.Guild == null)
             {
@@ -104,8 +105,7 @@ namespace Pina
             }
         }
 
-        [Command("Blacklist")]
-        private async Task Blacklist(params string[] args)
+        public async Task BlacklistAsync(ICommandContext ctx)
         {
             if (Context.Guild == null)
             {
@@ -138,8 +138,7 @@ namespace Pina
             }
         }
 
-        [Command("BotInteract")]
-        private async Task BotInteract([Remainder]string args)
+        public async Task BotInteractAsync(ICommandContext ctx)
         {
             args = args?.ToLowerInvariant();
             if (Context.Guild == null)
@@ -161,8 +160,7 @@ namespace Pina
             }
         }
 
-        [Command("VoteRequired"), Alias("VotesRequired")]
-        private async Task VoteRequired([Remainder] string args)
+        public async Task VoteRequiredAsync(ICommandContext ctx)
         {
             args = args?.ToLower();
             if (Context.Guild == null)
@@ -185,8 +183,7 @@ namespace Pina
             }
         }
 
-        [Command("CanUnpin")]
-        private async Task CanUnpin([Remainder] string args)
+        public async Task CanUnpinAsync(ICommandContext ctx)
         {
             args = args?.ToLower();
             if (Context.Guild == null)

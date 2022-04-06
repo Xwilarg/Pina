@@ -1,17 +1,16 @@
 ﻿using Discord;
-using Discord.Commands;
+using Pina.Command;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Pina
+namespace Pina.Module
 {
-    class PinModule : ModuleBase
+    public static class PinModule
     {
-        [Command("Unpin", RunMode = RunMode.Async)]
-        private async Task Unpin(params string[] args)
+        public static async Task UnpinAsync(ICommandContext ctx)
         {
             if (args.Length == 0)
-                await ReplyAsync("You must give the ID of the message you want to unpin.");
+                await ctx.ReplyAsync("You must give the ID of the message you want to unpin.");
             else
             {
                 ulong id;
@@ -28,35 +27,7 @@ namespace Pina
             }
         }
 
-        private static async Task<IMessage> GetMessageAsync(string id, IMessageChannel chan)
-        {
-            if (!ulong.TryParse(id, out ulong uid))
-                return null;
-            IMessage msg;
-            if (uid != 0)
-            {
-                msg = await chan.GetMessageAsync(uid);
-                if (msg != null)
-                    return msg;
-            }
-            if (chan is not ITextChannel textChan || uid == 0)
-                return null;
-            foreach (ITextChannel c in await textChan.Guild.GetTextChannelsAsync())
-            {
-                try
-                {
-                    msg = await c.GetMessageAsync(uid);
-                    if (msg != null)
-                        return msg;
-                }
-                catch (Discord.Net.HttpException)
-                { }
-            }
-            return null;
-        }
-
-        [Command("Pin", RunMode = RunMode.Async)]
-        private async Task Pin(params string[] args)
+        public async Task PinAsync(ICommandContext ctx)
         {
             if (args.Length == 0)
             {
