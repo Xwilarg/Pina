@@ -80,7 +80,7 @@ namespace Pina.Command
                                 {
                                     Name = "id",
                                     Description = "ID of the message",
-                                    Type = ApplicationCommandOptionType.Integer,
+                                    Type = ApplicationCommandOptionType.String,
                                     IsRequired = true
                                 }
                             }
@@ -102,7 +102,7 @@ namespace Pina.Command
                                 {
                                     Name = "id",
                                     Description = "ID of the message",
-                                    Type = ApplicationCommandOptionType.Integer,
+                                    Type = ApplicationCommandOptionType.String,
                                     IsRequired = false
                                 }
                             }

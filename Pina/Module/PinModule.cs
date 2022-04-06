@@ -1,5 +1,4 @@
 ﻿using Discord;
-using Pina.Command;
 using Pina.Command.Context;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,16 +9,30 @@ namespace Pina.Module
     {
         public static async Task UnpinAsync(ICommandContext ctx)
         {
-            IMessage msg = (await ctx.Channel.GetPinnedMessagesAsync()).FirstOrDefault(x => x.Id == ctx.GetArgument<ulong>("id"));
-            if (msg == null)
-                await ctx.ReplyAsync("I didn't find any message with this id.");
+
+            var arg = ctx.GetArgument<string>("id");
+            if (!ulong.TryParse(arg, out var id))
+            {
+                await ctx.ReplyAsync("Parameter must be a valid ID");
+            }
             else
-                await Program.P.PinMessageAsync(msg, ctx.User, ctx.Guild?.Id, false, false);
+            {
+                IMessage msg = (await ctx.Channel.GetPinnedMessagesAsync()).FirstOrDefault(x => x.Id == ctx.GetArgument<ulong>("id"));
+                if (msg == null)
+                    await ctx.ReplyAsync("I didn't find any message with this id.");
+                else
+                    await Program.P.PinMessageAsync(msg, ctx.User, ctx.Guild?.Id, false, false);
+            }
         }
 
         public static async Task PinAsync(ICommandContext ctx)
         {
-            var id = ctx.GetArgument<ulong?>("id");
+            var arg = ctx.GetArgument<string>("id");
+            ulong? id = null;
+            if (ulong.TryParse(arg, out var argId))
+            {
+                id = argId;
+            }
             if (id == null)
             {
                 var msg = await GetLastMessage(ctx.Channel);
