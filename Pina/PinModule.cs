@@ -1,6 +1,5 @@
 ﻿using Discord;
 using Discord.Commands;
-using DiscordUtils;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -29,6 +28,33 @@ namespace Pina
             }
         }
 
+        private static async Task<IMessage> GetMessageAsync(string id, IMessageChannel chan)
+        {
+            if (!ulong.TryParse(id, out ulong uid))
+                return null;
+            IMessage msg;
+            if (uid != 0)
+            {
+                msg = await chan.GetMessageAsync(uid);
+                if (msg != null)
+                    return msg;
+            }
+            if (chan is not ITextChannel textChan || uid == 0)
+                return null;
+            foreach (ITextChannel c in await textChan.Guild.GetTextChannelsAsync())
+            {
+                try
+                {
+                    msg = await c.GetMessageAsync(uid);
+                    if (msg != null)
+                        return msg;
+                }
+                catch (Discord.Net.HttpException)
+                { }
+            }
+            return null;
+        }
+
         [Command("Pin", RunMode = RunMode.Async)]
         private async Task Pin(params string[] args)
         {
@@ -47,7 +73,7 @@ namespace Pina
             }
             else
             {
-                IMessage msg = await Utils.GetMessage(args[0], Context.Channel);
+                IMessage msg = await GetMessageAsync(args[0], Context.Channel);
                 if (msg == null)
                 {
                     if (Program.P.GetDb().IsErrorOrMore(Program.P.GetDb().GetVerbosity(Context.Guild?.Id)))

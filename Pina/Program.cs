@@ -3,7 +3,6 @@ using Discord.Commands;
 using Discord.Net;
 using Discord.WebSocket;
 using DiscordBotsList.Api;
-using DiscordUtils;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -45,8 +44,16 @@ namespace Pina
             {
                 LogLevel = LogSeverity.Verbose,
             });
-            client.Log += Utils.Log;
-            commands.Log += Utils.Log;
+            client.Log += (msg) =>
+            {
+                Console.WriteLine(msg.ToString());
+                return Task.CompletedTask;
+            };
+            commands.Log += (msg) =>
+            {
+                Console.WriteLine(msg.ToString());
+                return Task.CompletedTask;
+            };
         }
 
         private async Task MainAsync()
@@ -82,19 +89,6 @@ namespace Pina
             await client.LoginAsync(TokenType.Bot, (string)json.botToken);
             StartTime = DateTime.Now;
             await client.StartAsync();
-
-            if (statsWebsite != null && statsToken != null)
-            {
-                var task = Task.Run(async () =>
-                {
-                    for (;;)
-                    {
-                        await Task.Delay(60000);
-                        if (client.ConnectionState == ConnectionState.Connected)
-                            await Utils.WebsiteUpdate("Pina", statsWebsite, statsToken, "serverCount", client.Guilds.Count.ToString());
-                    }
-                });
-            }
 
             await Task.Delay(-1);
         }
@@ -220,17 +214,15 @@ namespace Pina
             }
         }
 
-        private async Task ReactionAdded(Cacheable<IUserMessage, ulong> msg, ISocketMessageChannel _, SocketReaction react)
+        private async Task ReactionAdded(Cacheable<IUserMessage, ulong> msg, Cacheable<IMessageChannel, ulong> _, SocketReaction react)
         {
             if (react.Emote.Name == "📌" || react.Emote.Name == "📍")
             {
                 await PinMessageAsync(await msg.GetOrDownloadAsync(), react.User.IsSpecified ? react.User.Value : null, react.Channel as ITextChannel == null ? null : ((ITextChannel)react.Channel).Guild.Id, true, true);
-                await Utils.WebsiteUpdate("Pina", statsWebsite, statsToken, "nbMsgs", "1");
             }
             else if (react.Emote.Name == "⛔" || react.Emote.Name == "🚫")
             {
                 await PinMessageAsync(await msg.GetOrDownloadAsync(), react.User.IsSpecified ? react.User.Value : null, react.Channel as ITextChannel == null ? null : ((ITextChannel)react.Channel).Guild.Id, true, false);
-                await Utils.WebsiteUpdate("Pina", statsWebsite, statsToken, "nbMsgs", "1");
             }
             else if (react.Emote.Name == "✅" && react.UserId != client.CurrentUser.Id && PinAwaiting.ContainsKey(msg.Id))
             {
@@ -273,8 +265,6 @@ namespace Pina
             {
                 SocketCommandContext context = new SocketCommandContext(client, msg);
                 IResult result = await commands.ExecuteAsync(context, pos, null);
-                if (result.IsSuccess && statsWebsite != null && statsToken != null)
-                    await Utils.WebsiteUpdate("Pina", statsWebsite, statsToken, "nbMsgs", "1");
             }
         }
     }

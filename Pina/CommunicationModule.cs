@@ -1,17 +1,55 @@
 ﻿using Discord;
 using Discord.Commands;
-using DiscordUtils;
 using System;
+using System.IO;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Pina
 {
     class CommunicationModule : ModuleBase
     {
+
         [Command("Info")]
         private async Task Info()
         {
-            await ReplyAsync("", false, Utils.GetBotInfo(Program.P.StartTime, "Pina", Program.P.client.CurrentUser));
+            await ReplyAsync(embed: new EmbedBuilder()
+            {
+                Color = Color.Purple,
+                Fields = new()
+                {
+                    new EmbedFieldBuilder()
+                    {
+                        Name = "Uptime",
+                        Value = Utils.TimeSpanToString(DateTime.Now.Subtract(Program.P.StartTime)),
+                        IsInline = true
+                    },
+                    new EmbedFieldBuilder()
+                    {
+                        Name = "Creator",
+                        Value = "Zirk#0001",
+                        IsInline = true
+                    },
+                    new EmbedFieldBuilder()
+                    {
+                        Name = "Account creation",
+                        Value = Program.P.client.CurrentUser.CreatedAt.ToString("HH:mm:ss dd/MM/yy"),
+                        IsInline = true
+                    },
+                    new EmbedFieldBuilder()
+                    {
+                        Name = "Last version",
+                        Value = new FileInfo(Assembly.GetEntryAssembly().Location).LastWriteTimeUtc.ToString("HH:mm:ss dd/MM/yy"),
+                        IsInline = true
+                    },
+                    new EmbedFieldBuilder()
+                    {
+                        Name = "GitHub",
+                        Value = "https://github.com/Xwilarg/Pina",
+                        IsInline = true
+                    }
+                }
+            }.Build());
         }
 
         [Command("Help")]

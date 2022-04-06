@@ -1,6 +1,5 @@
 ﻿using Discord;
 using Discord.Commands;
-using DiscordUtils;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -89,7 +88,7 @@ namespace Pina
             }
             else
             {
-                List<IRole> roles = new List<IRole>();
+                List<IRole> roles = new();
                 foreach (string arg in args)
                 {
                     IRole role = Utils.GetRole(arg, Context.Guild);
@@ -123,10 +122,10 @@ namespace Pina
             }
             else
             {
-                List<IGuildUser> ids = new List<IGuildUser>();
+                List<IGuildUser> ids = new();
                 foreach (string arg in args)
                 {
-                    IGuildUser user = await Utils.GetUser(arg, Context.Guild);
+                    IGuildUser user = await Utils.GetUserAsync(arg, Context.Guild);
                     if (user == null)
                     {
                         await ReplyAsync($"I didn't find any matching user for {arg}.");
@@ -139,10 +138,10 @@ namespace Pina
             }
         }
 
-        [Command("BotInteract"), Alias("BotInteract")]
+        [Command("BotInteract")]
         private async Task BotInteract([Remainder]string args)
         {
-            args = args?.ToLower();
+            args = args?.ToLowerInvariant();
             if (Context.Guild == null)
             {
                 await ReplyAsync("This command is only available in a guild.");
