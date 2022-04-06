@@ -43,10 +43,10 @@ namespace Pina.Command
                     "invite",
                     new()
                     {
-                        Callback = CommunicationModule.HelpAsync,
+                        Callback = CommunicationModule.InviteAsync,
                         SlashCommand = new SlashCommandBuilder()
                         {
-                            Name = "help",
+                            Name = "invite",
                             Description = "Get the invite link of the bot"
                         }.Build()
                     }
@@ -55,7 +55,7 @@ namespace Pina.Command
                     "gdpr",
                     new()
                     {
-                        Callback = CommunicationModule.HelpAsync,
+                        Callback = CommunicationModule.GdprAsync,
                         SlashCommand = new SlashCommandBuilder()
                         {
                             Name = "gdpr",
@@ -203,7 +203,7 @@ namespace Pina.Command
                     "voterequired",
                     new()
                     {
-                        Callback = SettingsModule.BotInteractAsync,
+                        Callback = SettingsModule.VoteRequiredAsync,
                         SlashCommand = new SlashCommandBuilder()
                         {
                             Name = "voterequired",
@@ -225,7 +225,7 @@ namespace Pina.Command
                     "canunpin",
                     new()
                     {
-                        Callback = SettingsModule.BotInteractAsync,
+                        Callback = SettingsModule.CanUnpinAsync,
                         SlashCommand = new SlashCommandBuilder()
                         {
                             Name = "canunpin",

@@ -63,7 +63,7 @@ namespace Pina
             if (json.botToken == null)
                 throw new NullReferenceException("Missing botToken in Credentials file");
 
-            _commandManager = new(json.debugGuildId);
+            _commandManager = new((ulong?)json.debugGuildId);
 
             statsWebsite = json.statsWebsite;
             statsToken = json.statsToken;
