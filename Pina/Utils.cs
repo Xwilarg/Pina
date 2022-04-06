@@ -86,10 +86,8 @@ namespace Pina
             return null;
         }
 
-        public static async Task<IMessage> GetMessageAsync(string id, IMessageChannel chan)
+        public static async Task<IMessage> GetMessageAsync(ulong uid, IMessageChannel chan)
         {
-            if (!ulong.TryParse(id, out ulong uid))
-                return null;
             IMessage msg;
             if (uid != 0)
             {

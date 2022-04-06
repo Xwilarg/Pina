@@ -1,5 +1,6 @@
 ﻿using Discord;
 using Pina.Command;
+using Pina.Command.Context;
 using System;
 using System.IO;
 using System.Reflection;

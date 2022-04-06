@@ -5,6 +5,7 @@ using Discord.WebSocket;
 using DiscordBotsList.Api;
 using Newtonsoft.Json;
 using Pina.Command;
+using Pina.Command.Context;
 using Pina.Module;
 using System;
 using System.Collections.Generic;
@@ -83,12 +84,19 @@ namespace Pina
             client.LeftGuild += GuildCountChange;
             client.Connected += UpdateDiscordBots;
             client.Ready += Ready;
+            client.SlashCommandExecuted += SlashCommandExecuted;
 
             await client.LoginAsync(TokenType.Bot, (string)json.botToken);
             StartTime = DateTime.Now;
             await client.StartAsync();
 
             await Task.Delay(-1);
+        }
+
+        private async Task SlashCommandExecuted(SocketSlashCommand arg)
+        {
+            var ctx = new SlashCommandContext(arg);
+            await _commandManager.InvokeCommandAsync(arg.CommandName, ctx);
         }
 
         private async Task Ready()
@@ -286,7 +294,7 @@ namespace Pina
         {
             if (arg is not SocketUserMessage msg || (arg.Author.IsBot && !db.IsCanBotInteract(msg.Channel is ITextChannel textChan ? textChan.GuildId : null))) return;
             int pos = 0;
-            if (msg.HasMentionPrefix(client.CurrentUser, ref pos) || msg.HasStringPrefix(db.GetPrefix(msg.Channel as ITextChannel == null ? null : ((ITextChannel)msg.Channel).Guild.Id), ref pos))
+            if (msg.HasMentionPrefix(client.CurrentUser, ref pos))
             {
                 SocketCommandContext context = new SocketCommandContext(client, msg);
                 // TODO: IResult result = await commands.ExecuteAsync(context, pos, null);
