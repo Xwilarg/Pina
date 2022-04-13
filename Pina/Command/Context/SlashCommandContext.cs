@@ -20,7 +20,7 @@ namespace Pina.Command.Context
 
         public IUser User => _ctx.User;
 
-        public async Task ReplyAsync(string message = "", Embed embed = null)
+        public async Task ReplyAsync(string message = "", Embed embed = null, bool ephemeral = false)
         {
             if (_ctx.HasResponded)
             {

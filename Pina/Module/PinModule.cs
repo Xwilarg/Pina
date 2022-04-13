@@ -21,7 +21,10 @@ namespace Pina.Module
                 if (msg == null)
                     await ctx.ReplyAsync("I didn't find any message with this id.");
                 else
+                {
                     await Program.P.PinMessageAsync(msg, ctx.User, ctx.Guild?.Id, false, false);
+                    await ctx.ReplyAsync("Your message was unpinned", ephemeral: true);
+                }
             }
         }
 
@@ -44,6 +47,7 @@ namespace Pina.Module
                 else
                 {
                     await Program.P.PinMessageAsync(msg, ctx.User, ctx.Guild?.Id, false, true);
+                    await ctx.ReplyAsync("Your message was pinned", ephemeral: true);
                 }
             }
             else
