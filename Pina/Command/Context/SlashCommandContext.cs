@@ -32,7 +32,7 @@ namespace Pina.Command.Context
             }
             else
             {
-                await _ctx.RespondAsync(message, embed: embed);
+                await _ctx.RespondAsync(message, embed: embed, ephemeral: true);
             }
         }
 
