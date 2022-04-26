@@ -28,25 +28,25 @@ namespace Pina.Module
             var verb = ctx.GetArgument<string>("verbosity");
             if (ctx.Guild == null)
             {
-                await ctx.ReplyAsync("This command is only available in a guild.");
+                await ctx.ReplyAsync("This command is only available in a guild.", ephemeral: true);
             }
             if (!CanModify(ctx.User, ctx.Guild.OwnerId))
             {
-                await ctx.ReplyAsync("You don't have the permission to do this command.");
+                await ctx.ReplyAsync("You don't have the permission to do this command.", ephemeral: true);
             }
             else if (verb == null)
             {
-                await ctx.ReplyAsync("You must provide a verbosity between none, error and info");
+                await ctx.ReplyAsync("You must provide a verbosity between none, error and info", ephemeral: true);
             }
             else
             {
                 string verbosity = verb.ToLowerInvariant();
                 if (verbosity != "none" && verbosity != "error" && verbosity != "info")
-                    await ctx.ReplyAsync("The selected verbosity must be none, error or info.");
+                    await ctx.ReplyAsync("The selected verbosity must be none, error or info.", ephemeral: true);
                 else
                 {
                     await Program.P.GetDb().SetVerbosity(ctx.Guild.Id, verbosity);
-                    await ctx.ReplyAsync($"Your verbosity was set to {verbosity}.");
+                    await ctx.ReplyAsync($"Your verbosity was set to {verbosity}.", ephemeral: true);
                 }
             }
         }
@@ -56,16 +56,16 @@ namespace Pina.Module
             var whitelist = ctx.GetArgument<string>("whitelist");
             if (ctx.Guild == null)
             {
-                await ctx.ReplyAsync("This command is only available in a guild.");
+                await ctx.ReplyAsync("This command is only available in a guild.", ephemeral: true);
             }
             if (!CanModify(ctx.User, ctx.Guild.OwnerId))
             {
-                await ctx.ReplyAsync("You don't have the permission to do this command.");
+                await ctx.ReplyAsync("You don't have the permission to do this command.", ephemeral: true);
             }
             else if (whitelist == null)
             {
                 await Program.P.GetDb().SetWhitelist(ctx.Guild.Id, "0");
-                await ctx.ReplyAsync("Your whitelist was removed.");
+                await ctx.ReplyAsync("Your whitelist was removed.", ephemeral: true);
             }
             else
             {
@@ -75,13 +75,13 @@ namespace Pina.Module
                     IRole role = Utils.GetRole(arg, ctx.Guild);
                     if (role == null)
                     {
-                        await ctx.ReplyAsync($"I didn't find any matching role for {arg}.");
+                        await ctx.ReplyAsync($"I didn't find any matching role for {arg}.", ephemeral: true);
                         return;
                     }
                     roles.Add(role);
                 }
                 await Program.P.GetDb().SetWhitelist(ctx.Guild.Id, string.Join("|", roles.Select(x => x.Id)));
-                await ctx.ReplyAsync($"Your whitelist was set to the following roles:\n{string.Join(", ", roles.Select(x => x.Name.Replace("@everyone", "@ everyone")))}");
+                await ctx.ReplyAsync($"Your whitelist was set to the following roles:\n{string.Join(", ", roles.Select(x => x.Name.Replace("@everyone", "@ everyone")))}", ephemeral: true);
             }
         }
 
@@ -90,16 +90,16 @@ namespace Pina.Module
             var blacklist = ctx.GetArgument<string>("blacklist");
             if (ctx.Guild == null)
             {
-                await ctx.ReplyAsync("This command is only available in a guild.");
+                await ctx.ReplyAsync("This command is only available in a guild.", ephemeral: true);
             }
             if (!CanModify(ctx.User, ctx.Guild.OwnerId))
             {
-                await ctx.ReplyAsync("You don't have the permission to do this command.");
+                await ctx.ReplyAsync("You don't have the permission to do this command.", ephemeral: true);
             }
             else if (blacklist != null)
             {
                 await Program.P.GetDb().SetBlacklist(ctx.Guild.Id, "0");
-                await ctx.ReplyAsync("Your blacklist was removed.");
+                await ctx.ReplyAsync("Your blacklist was removed.", ephemeral: true);
             }
             else
             {
@@ -109,13 +109,13 @@ namespace Pina.Module
                     IGuildUser user = await Utils.GetUserAsync(arg, ctx.Guild);
                     if (user == null)
                     {
-                        await ctx.ReplyAsync($"I didn't find any matching user for {arg}.");
+                        await ctx.ReplyAsync($"I didn't find any matching user for {arg}.", ephemeral: true);
                         return;
                     }
                     ids.Add(user);
                 }
                 await Program.P.GetDb().SetBlacklist(ctx.Guild.Id, string.Join("|", ids.Select(x => x.Id)));
-                await ctx.ReplyAsync($"Your blacklist was set to the following users:\n{string.Join(", ", ids.Select(x => x.ToString()))}");
+                await ctx.ReplyAsync($"Your blacklist was set to the following users:\n{string.Join(", ", ids.Select(x => x.ToString()))}", ephemeral: true);
             }
         }
 
@@ -124,20 +124,20 @@ namespace Pina.Module
             var canInterract = ctx.GetArgument<string>("caninteract");
             if (ctx.Guild == null)
             {
-                await ctx.ReplyAsync("This command is only available in a guild.");
+                await ctx.ReplyAsync("This command is only available in a guild.", ephemeral: true);
             }
             if (!CanModify(ctx.User, ctx.Guild.OwnerId))
             {
-                await ctx.ReplyAsync("You don't have the permission to do this command.");
+                await ctx.ReplyAsync("You don't have the permission to do this command.", ephemeral: true);
             }
             else if (canInterract != "true" && canInterract != "false")
             {
-                await ctx.ReplyAsync("You must provide 'true' or 'false' as an argument.");
+                await ctx.ReplyAsync("You must provide 'true' or 'false' as an argument.", ephemeral: true);
             }
             else
             {
                 await Program.P.GetDb().SetCanBotInteract(ctx.Guild.Id, canInterract == "true");
-                await ctx.ReplyAsync("Your preferences were updated");
+                await ctx.ReplyAsync("Your preferences were updated", ephemeral: true);
             }
         }
 
@@ -146,14 +146,14 @@ namespace Pina.Module
             var nbVotes = ctx.GetArgument<int>("nbvotes");
             if (ctx.Guild == null)
             {
-                await ctx.ReplyAsync("This command is only available in a guild.");
+                await ctx.ReplyAsync("This command is only available in a guild.", ephemeral: true);
             }
             if (!CanModify(ctx.User, ctx.Guild.OwnerId))
             {
-                await ctx.ReplyAsync("You don't have the permission to do this command.");
+                await ctx.ReplyAsync("You don't have the permission to do this command.", ephemeral: true);
             }
             await Program.P.GetDb().SetBotVotesRequired(ctx.Guild.Id, nbVotes);
-            await ctx.ReplyAsync("Your preferences were updated");
+            await ctx.ReplyAsync("Your preferences were updated", ephemeral: true);
         }
 
         public static async Task CanUnpinAsync(ICommandContext ctx)
@@ -161,20 +161,20 @@ namespace Pina.Module
             var canUnpin = ctx.GetArgument<string>("canunpin");
             if (ctx.Guild == null)
             {
-                await ctx.ReplyAsync("This command is only available in a guild.");
+                await ctx.ReplyAsync("This command is only available in a guild.", ephemeral: true);
             }
             if (!CanModify(ctx.User, ctx.Guild.OwnerId))
             {
-                await ctx.ReplyAsync("You don't have the permission to do this command.");
+                await ctx.ReplyAsync("You don't have the permission to do this command.", ephemeral: true);
             }
             else if (canUnpin != "true" && canUnpin != "false")
             {
-                await ctx.ReplyAsync("You must provide 'true' or 'false' as an argument.");
+                await ctx.ReplyAsync("You must provide 'true' or 'false' as an argument.", ephemeral: true);
             }
             else
             {
                 await Program.P.GetDb().SetCanUnpin(ctx.Guild.Id, canUnpin == "true");
-                await ctx.ReplyAsync("Your preferences were updated");
+                await ctx.ReplyAsync("Your preferences were updated", ephemeral: true);
             }
         }
     }

@@ -48,7 +48,7 @@ namespace Pina.Module
                         IsInline = true
                     }
                 }
-            }.Build());
+            }.Build(), ephemeral: true);
         }
 
         public static async Task HelpAsync(ICommandContext ctx)
@@ -77,7 +77,7 @@ namespace Pina.Module
                     "**Gdpr**: Display the information I have about this guild" + Environment.NewLine +
                     "**Info**: Display various information about me" + Environment.NewLine +
                     "**Invite**: Display the invite link of the bot" + Environment.NewLine
-            }.Build());
+            }.Build(), ephemeral: true);
         }
 
         public static async Task InviteAsync(ICommandContext ctx)
@@ -88,14 +88,14 @@ namespace Pina.Module
         public static async Task GdprAsync(ICommandContext ctx)
         {
             if (ctx.Guild == null)
-                await ctx.ReplyAsync("I only save data about guilds.");
+                await ctx.ReplyAsync("I only save data about guilds.", ephemeral: true);
             else
                 await ctx.ReplyAsync(embed: new EmbedBuilder()
                 {
                     Color = Color.Blue,
                     Title = $"Data saved about {ctx.Guild.Name}:",
                     Description = await Program.P.GetDb().GetGuildAsync(ctx.Guild.Id)
-                }.Build());
+                }.Build(), ephemeral: true);
         }
     }
 }

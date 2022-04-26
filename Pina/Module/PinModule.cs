@@ -13,13 +13,13 @@ namespace Pina.Module
             var arg = ctx.GetArgument<string>("id");
             if (!ulong.TryParse(arg, out var id))
             {
-                await ctx.ReplyAsync("Parameter must be a valid ID");
+                await ctx.ReplyAsync("Parameter must be a valid ID", ephemeral: true);
             }
             else
             {
                 IMessage msg = (await ctx.Channel.GetPinnedMessagesAsync()).FirstOrDefault(x => x.Id == ctx.GetArgument<ulong>("id"));
                 if (msg == null)
-                    await ctx.ReplyAsync("I didn't find any message with this id.");
+                    await ctx.ReplyAsync("I didn't find any message with this id.", ephemeral: true);
                 else
                 {
                     await Program.P.PinMessageAsync(msg, ctx.User, ctx.Guild?.Id, false, false);
@@ -42,7 +42,7 @@ namespace Pina.Module
                 if (msg == null)
                 {
                     if (Program.P.GetDb().IsErrorOrMore(Program.P.GetDb().GetVerbosity(ctx.Guild?.Id)))
-                        await ctx.ReplyAsync("There is nothing to pin.");
+                        await ctx.ReplyAsync("There is nothing to pin.", ephemeral: true);
                 }
                 else
                 {
@@ -56,7 +56,7 @@ namespace Pina.Module
                 if (msg == null)
                 {
                     if (Program.P.GetDb().IsErrorOrMore(Program.P.GetDb().GetVerbosity(ctx.Guild?.Id)))
-                        await ctx.ReplyAsync("I didn't find any message with this id.");
+                        await ctx.ReplyAsync("I didn't find any message with this id.", ephemeral: true);
                 }
                 else
                     await Program.P.PinMessageAsync(msg, ctx.User, ctx.Guild?.Id, false, true);
