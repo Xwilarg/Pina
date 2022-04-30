@@ -296,8 +296,9 @@ namespace Pina
             int pos = 0;
             if (msg.HasMentionPrefix(client.CurrentUser, ref pos))
             {
-                SocketCommandContext context = new SocketCommandContext(client, msg);
-                // TODO: IResult result = await commands.ExecuteAsync(context, pos, null);
+                var splt = msg.Content.Split(' ');
+                var ctx = new MessageCommandContext(msg, string.Join(" ", splt.Skip(1)));
+                await _commandManager.InvokeCommandAsync(splt[0], ctx);
             }
         }
     }
