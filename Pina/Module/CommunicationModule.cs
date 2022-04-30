@@ -68,7 +68,6 @@ namespace Pina.Module
                         "**Verbosity [none/error/info]**: Set if I say something or not when something occur" + Environment.NewLine +
                         "**Whitelist [(optional)roles]**: Set the roles that can pin messages, don't write anything for all, admins are not affected by this" + Environment.NewLine +
                         "**Blacklist [(optional)users]**: Set the users that can't pin messages, don't write anything for none, admins are not affected by this" + Environment.NewLine +
-                        "**Prefix [(optional)prefix]**: Set the prefix for bot command, don't write anything to allow the use of command without one" + Environment.NewLine +
                         "**BotInteract [true/false]**: Set if other bots are allowed to do commands" + Environment.NewLine +
                         "**CanUnpin [true/false]**: Set if user can unpin messages" + Environment.NewLine +
                         "**VoteRequired [number of votes required]**: Set the number of people that need to vote to pin/unpin a message, set to 1 to disable") +

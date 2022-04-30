@@ -103,27 +103,30 @@ namespace Pina
         {
             if (!_commandManager.AreCommandsLoaded)
             {
-                var debugGuild = _commandManager.GetDebugGuild(client);
-                var commands = _commandManager.LoadCommands();
-                foreach (var cmd in commands)
+                _ = Task.Run(async () =>
                 {
+                    var debugGuild = _commandManager.GetDebugGuild(client);
+                    var commands = _commandManager.LoadCommands();
+                    foreach (var cmd in commands)
+                    {
+                        if (debugGuild != null)
+                        {
+                            await debugGuild.CreateApplicationCommandAsync(cmd.SlashCommand);
+                        }
+                        else
+                        {
+                            await client.CreateGlobalApplicationCommandAsync(cmd.SlashCommand);
+                        }
+                    }
                     if (debugGuild != null)
                     {
-                        await debugGuild.CreateApplicationCommandAsync(cmd.SlashCommand);
+                        await debugGuild.BulkOverwriteApplicationCommandAsync(commands.Select(x => x.SlashCommand).ToArray());
                     }
                     else
                     {
-                        await client.CreateGlobalApplicationCommandAsync(cmd.SlashCommand);
+                        await client.BulkOverwriteGlobalApplicationCommandsAsync(commands.Select(x => x.SlashCommand).ToArray());
                     }
-                }
-                if (debugGuild != null)
-                {
-                    await debugGuild.BulkOverwriteApplicationCommandAsync(commands.Select(x => x.SlashCommand).ToArray());
-                }
-                else
-                {
-                    await client.BulkOverwriteGlobalApplicationCommandsAsync(commands.Select(x => x.SlashCommand).ToArray());
-                }
+                });
             }
         }
 
@@ -296,7 +299,7 @@ namespace Pina
             int pos = 0;
             if (msg.HasMentionPrefix(client.CurrentUser, ref pos))
             {
-                var splt = msg.Content.Split(' ');
+                var splt = msg.Content[pos..].Split(' ');
                 var ctx = new MessageCommandContext(msg, string.Join(" ", splt.Skip(1)));
                 await _commandManager.InvokeCommandAsync(splt[0], ctx);
             }
