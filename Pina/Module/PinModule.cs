@@ -17,7 +17,7 @@ namespace Pina.Module
             }
             else
             {
-                IMessage msg = (await ctx.Channel.GetPinnedMessagesAsync()).FirstOrDefault(x => x.Id == ctx.GetArgument<ulong>("id"));
+                IMessage msg = (await ctx.Channel.GetPinnedMessagesAsync()).FirstOrDefault(x => x.Id == id);
                 if (msg == null)
                     await ctx.ReplyAsync("I didn't find any message with this id.", ephemeral: true);
                 else
