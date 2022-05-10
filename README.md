@@ -29,7 +29,7 @@ Just click [here](https://discord.com/api/oauth2/authorize?client_id=58331455684
 
 ## Contact me
 Have any question?<br/>
-You can either contact me on Discord (Zirk#0001) or by Email ([xwilarg@yahoo.fr](mailto:contact@zirk.eu))
+You can either contact me on Discord (Zirk#0001) or by Email ([contact@zirk.eu](mailto:contact@zirk.eu))
 
 ## Anything else?
 Yes, Pina is also released on top.gg so go check [her page](https://top.gg/bot/583314556848308261).
