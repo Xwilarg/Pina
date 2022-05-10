@@ -25,11 +25,11 @@ Thanks to this bot, anyone is now able to pin message by writing p.pin or by add
 |`invite`| Display the invite link of the bot.||
 
 ## Invite Pina to your server
-Just click [here](https://discordapp.com/oauth2/authorize?client_id=583314556848308261&permissions=10240&scope=bot).
+Just click [here](https://discord.com/api/oauth2/authorize?client_id=583314556848308261&scope=bot%20applications.commands).
 
 ## Contact me
 Have any question?<br/>
-You can either contact me on Discord (Zirk#0001) or by Email ([xwilarg@yahoo.fr](mailto:xwilarg@yahoo.fr))
+You can either contact me on Discord (Zirk#0001) or by Email ([xwilarg@yahoo.fr](mailto:contact@zirk.eu))
 
 ## Anything else?
 Yes, Pina is also released on top.gg so go check [her page](https://top.gg/bot/583314556848308261).
