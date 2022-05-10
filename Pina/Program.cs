@@ -3,8 +3,10 @@ using Discord.Commands;
 using Discord.Net;
 using Discord.WebSocket;
 using DiscordBotsList.Api;
-using DiscordUtils;
 using Newtonsoft.Json;
+using Pina.Command;
+using Pina.Command.Context;
+using Pina.Module;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -20,7 +22,6 @@ namespace Pina
             => await new Program().MainAsync();
 
         public readonly DiscordSocketClient client;
-        private readonly CommandService commands = new();
 
         public DateTime StartTime { private set; get; }
         public static Program P { private set; get; }
@@ -35,6 +36,8 @@ namespace Pina
         private AuthDiscordBotListApi dblApi;
         private DateTime lastDiscordBotsSent;
 
+        private CommandManager _commandManager;
+
         public Db GetDb()
             => db;
 
@@ -45,8 +48,11 @@ namespace Pina
             {
                 LogLevel = LogSeverity.Verbose,
             });
-            client.Log += Utils.Log;
-            commands.Log += Utils.Log;
+            client.Log += (msg) =>
+            {
+                Console.WriteLine(msg.ToString());
+                return Task.CompletedTask;
+            };
         }
 
         private async Task MainAsync()
@@ -56,6 +62,9 @@ namespace Pina
             dynamic json = JsonConvert.DeserializeObject(File.ReadAllText("Keys/Credentials.json"));
             if (json.botToken == null)
                 throw new NullReferenceException("Missing botToken in Credentials file");
+
+            _commandManager = new((ulong?)json.debugGuildId);
+
             statsWebsite = json.statsWebsite;
             statsToken = json.statsToken;
             lastDiscordBotsSent = DateTime.MinValue;
@@ -74,29 +83,51 @@ namespace Pina
             client.JoinedGuild += GuildCountChange;
             client.LeftGuild += GuildCountChange;
             client.Connected += UpdateDiscordBots;
-
-            await commands.AddModuleAsync<CommunicationModule>(null);
-            await commands.AddModuleAsync<PinModule>(null);
-            await commands.AddModuleAsync<SettingsModule>(null);
+            client.Ready += Ready;
+            client.SlashCommandExecuted += SlashCommandExecuted;
 
             await client.LoginAsync(TokenType.Bot, (string)json.botToken);
             StartTime = DateTime.Now;
             await client.StartAsync();
 
-            if (statsWebsite != null && statsToken != null)
+            await Task.Delay(-1);
+        }
+
+        private async Task SlashCommandExecuted(SocketSlashCommand arg)
+        {
+            var ctx = new SlashCommandContext(arg);
+            await _commandManager.InvokeCommandAsync(arg.CommandName, ctx);
+        }
+
+        private async Task Ready()
+        {
+            if (!_commandManager.AreCommandsLoaded)
             {
-                var task = Task.Run(async () =>
+                _ = Task.Run(async () =>
                 {
-                    for (;;)
+                    var debugGuild = _commandManager.GetDebugGuild(client);
+                    var commands = _commandManager.LoadCommands();
+                    foreach (var cmd in commands)
                     {
-                        await Task.Delay(60000);
-                        if (client.ConnectionState == ConnectionState.Connected)
-                            await Utils.WebsiteUpdate("Pina", statsWebsite, statsToken, "serverCount", client.Guilds.Count.ToString());
+                        if (debugGuild != null)
+                        {
+                            await debugGuild.CreateApplicationCommandAsync(cmd.SlashCommand);
+                        }
+                        else
+                        {
+                            await client.CreateGlobalApplicationCommandAsync(cmd.SlashCommand);
+                        }
+                    }
+                    if (debugGuild != null)
+                    {
+                        await debugGuild.BulkOverwriteApplicationCommandAsync(commands.Select(x => x.SlashCommand).ToArray());
+                    }
+                    else
+                    {
+                        await client.BulkOverwriteGlobalApplicationCommandsAsync(commands.Select(x => x.SlashCommand).ToArray());
                     }
                 });
             }
-
-            await Task.Delay(-1);
         }
 
         private async Task GuildCountChange(SocketGuild _)
@@ -220,17 +251,15 @@ namespace Pina
             }
         }
 
-        private async Task ReactionAdded(Cacheable<IUserMessage, ulong> msg, ISocketMessageChannel _, SocketReaction react)
+        private async Task ReactionAdded(Cacheable<IUserMessage, ulong> msg, Cacheable<IMessageChannel, ulong> _, SocketReaction react)
         {
             if (react.Emote.Name == "📌" || react.Emote.Name == "📍")
             {
                 await PinMessageAsync(await msg.GetOrDownloadAsync(), react.User.IsSpecified ? react.User.Value : null, react.Channel as ITextChannel == null ? null : ((ITextChannel)react.Channel).Guild.Id, true, true);
-                await Utils.WebsiteUpdate("Pina", statsWebsite, statsToken, "nbMsgs", "1");
             }
             else if (react.Emote.Name == "⛔" || react.Emote.Name == "🚫")
             {
                 await PinMessageAsync(await msg.GetOrDownloadAsync(), react.User.IsSpecified ? react.User.Value : null, react.Channel as ITextChannel == null ? null : ((ITextChannel)react.Channel).Guild.Id, true, false);
-                await Utils.WebsiteUpdate("Pina", statsWebsite, statsToken, "nbMsgs", "1");
             }
             else if (react.Emote.Name == "✅" && react.UserId != client.CurrentUser.Id && PinAwaiting.ContainsKey(msg.Id))
             {
@@ -266,15 +295,13 @@ namespace Pina
 
         private async Task HandleCommandAsync(SocketMessage arg)
         {
-            SocketUserMessage msg = arg as SocketUserMessage;
-            if (msg == null || (arg.Author.IsBot && !db.IsCanBotInteract(msg.Channel is ITextChannel textChan ? textChan.GuildId : null))) return;
+            if (arg is not SocketUserMessage msg || (arg.Author.IsBot && !db.IsCanBotInteract(msg.Channel is ITextChannel textChan ? textChan.GuildId : null))) return;
             int pos = 0;
-            if (msg.HasMentionPrefix(client.CurrentUser, ref pos) || msg.HasStringPrefix(db.GetPrefix(msg.Channel as ITextChannel == null ? (ulong?)null : ((ITextChannel)msg.Channel).Guild.Id), ref pos))
+            if (msg.HasMentionPrefix(client.CurrentUser, ref pos))
             {
-                SocketCommandContext context = new SocketCommandContext(client, msg);
-                IResult result = await commands.ExecuteAsync(context, pos, null);
-                if (result.IsSuccess && statsWebsite != null && statsToken != null)
-                    await Utils.WebsiteUpdate("Pina", statsWebsite, statsToken, "nbMsgs", "1");
+                var splt = msg.Content[pos..].Split(' ');
+                var ctx = new MessageCommandContext(msg, string.Join(" ", splt.Skip(1)));
+                await _commandManager.InvokeCommandAsync(splt[0], ctx);
             }
         }
     }

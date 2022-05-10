@@ -16,7 +16,6 @@ namespace Pina
             guildsVerbosity = new();
             guildsWhitelist = new();
             guildsBlacklist = new();
-            guildsPrefix = new();
             guildsCanBotInteract = new();
             guildsVotesRequired = new();
             guildsCanUnpin = new();
@@ -34,13 +33,12 @@ namespace Pina
 
         private const string defaultVebosity = "error";
         private const string defaultWhitelist = "0";
-        private const string defaultPrefix = "p.";
         public const bool defaultCanBotInteract = false;
         public const bool defaultCanUnpin = true;
 
         public async Task InitGuildAsync(ulong guildId)
         {
-            if (guildsPrefix.ContainsKey(guildId))
+            if (guildsVerbosity.ContainsKey(guildId))
                 return;
 
             if (await R.Db(dbName).Table("Guilds").GetAll(guildId.ToString()).Count().Eq(0).RunAsync<bool>(conn))
@@ -49,14 +47,12 @@ namespace Pina
                    .With("verbosity", defaultVebosity)
                    .With("whitelist", defaultWhitelist)
                    .With("blacklist", defaultWhitelist)
-                   .With("prefix", defaultPrefix)
                    .With("canBotInteract", defaultCanBotInteract)
                    .With("canUnpin", defaultCanUnpin)
                     ).RunAsync(conn);
                 UpdateVerbosity(guildId, defaultVebosity);
                 UpdateWhitelist(guildId, defaultWhitelist);
                 UpdateBlacklist(guildId, defaultWhitelist);
-                UpdatePrefix(guildId, defaultPrefix);
                 UpdateCanBotInteract(guildId, defaultCanBotInteract);
                 UpdateBotVotesRequired(guildId, 1);
                 UpdateCanUnpin(guildId, defaultCanUnpin);
@@ -66,7 +62,6 @@ namespace Pina
                 dynamic json = await R.Db(dbName).Table("Guilds").Get(guildId.ToString()).RunAsync(conn);
                 UpdateVerbosity(guildId, (string)json.verbosity);
                 UpdateWhitelist(guildId, (string)json.whitelist);
-                UpdatePrefix(guildId, (string)json.prefix);
                 var blacklist = (string)json.blacklist;
                 UpdateBlacklist(guildId, blacklist ?? defaultWhitelist);
                 var canBotInteract = (bool?)json.canBotInteract;
@@ -76,14 +71,6 @@ namespace Pina
                 var canUnpin = (bool?)json.canUnpin;
                 UpdateCanUnpin(guildId, canUnpin ?? defaultCanUnpin);
             }
-        }
-
-        public async Task SetPrefix(ulong guildId, string prefix)
-        {
-            await R.Db(dbName).Table("Guilds").Update(R.HashMap("id", guildId.ToString())
-                .With("prefix", prefix)
-                ).RunAsync(conn);
-            UpdatePrefix(guildId, prefix);
         }
 
         public async Task SetVerbosity(ulong guildId, string verbosity)
@@ -136,9 +123,6 @@ namespace Pina
 
         public bool IsErrorOrMore(Verbosity v)
             => v == Verbosity.Error || v == Verbosity.Info;
-
-        public string GetPrefix(ulong? guildId)
-            => guildsPrefix == null ? defaultPrefix : guildsPrefix[guildId.Value];
 
         public Verbosity GetVerbosity(ulong? guildId)
         {
@@ -207,9 +191,6 @@ namespace Pina
         private void UpdateBlacklist(ulong guildId, string value)
             => UpdateDictionary(guildId, value, guildsBlacklist);
 
-        private void UpdatePrefix(ulong guildId, string value)
-            => UpdateDictionary(guildId, value, guildsPrefix);
-
         private void UpdateCanBotInteract(ulong guildId, bool value)
             => UpdateDictionary(guildId, value, guildsCanBotInteract);
 
@@ -240,7 +221,6 @@ namespace Pina
         private Dictionary<ulong, string> guildsVerbosity;
         private Dictionary<ulong, string> guildsWhitelist;
         private Dictionary<ulong, string> guildsBlacklist;
-        private Dictionary<ulong, string> guildsPrefix;
         private Dictionary<ulong, bool> guildsCanBotInteract;
         private Dictionary<ulong, int> guildsVotesRequired;
         private Dictionary<ulong, bool> guildsCanUnpin;
