@@ -59,7 +59,10 @@ namespace Pina.Module
                         await ctx.ReplyAsync("I didn't find any message with this id.", ephemeral: true);
                 }
                 else
+                {
                     await Program.P.PinMessageAsync(msg, ctx.User, ctx.Guild?.Id, false, true);
+                    await ctx.ReplyAsync("Your message was pinned", ephemeral: true);
+                }
             }
         }
 
