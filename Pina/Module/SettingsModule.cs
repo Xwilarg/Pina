@@ -34,7 +34,7 @@ namespace Pina.Module
             {
                 await ctx.ReplyAsync("You don't have the permission to do this command.", ephemeral: true);
             }
-            else if (verb == null)
+            else if (string.IsNullOrWhiteSpace(verb))
             {
                 await ctx.ReplyAsync("You must provide a verbosity between none, error and info", ephemeral: true);
             }
@@ -62,7 +62,7 @@ namespace Pina.Module
             {
                 await ctx.ReplyAsync("You don't have the permission to do this command.", ephemeral: true);
             }
-            else if (whitelist == null)
+            else if (string.IsNullOrWhiteSpace(whitelist))
             {
                 await Program.P.GetDb().SetWhitelist(ctx.Guild.Id, "0");
                 await ctx.ReplyAsync("Your whitelist was removed.", ephemeral: true);
@@ -96,7 +96,7 @@ namespace Pina.Module
             {
                 await ctx.ReplyAsync("You don't have the permission to do this command.", ephemeral: true);
             }
-            else if (blacklist != null)
+            else if (string.IsNullOrWhiteSpace(blacklist))
             {
                 await Program.P.GetDb().SetBlacklist(ctx.Guild.Id, "0");
                 await ctx.ReplyAsync("Your blacklist was removed.", ephemeral: true);
