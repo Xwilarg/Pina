@@ -1,5 +1,4 @@
 ﻿using Discord;
-using Pina.Command;
 using Pina.Command.Context;
 using System.Collections.Generic;
 using System.Linq;
@@ -174,6 +173,28 @@ namespace Pina.Module
             else
             {
                 await Program.P.GetDb().SetCanUnpin(ctx.Guild.Id, canUnpin == "true");
+                await ctx.ReplyAsync("Your preferences were updated", ephemeral: true);
+            }
+        }
+
+        public static async Task PinVoteSilentAsync(ICommandContext ctx)
+        {
+            var pinvote = ctx.GetArgument<string>("pinvote");
+            if (ctx.Guild == null)
+            {
+                await ctx.ReplyAsync("This command is only available in a guild.", ephemeral: true);
+            }
+            if (!CanModify(ctx.User, ctx.Guild.OwnerId))
+            {
+                await ctx.ReplyAsync("You don't have the permission to do this command.", ephemeral: true);
+            }
+            else if (pinvote != "true" && pinvote != "false")
+            {
+                await ctx.ReplyAsync("You must provide 'true' or 'false' as an argument.", ephemeral: true);
+            }
+            else
+            {
+                await Program.P.GetDb().SetArePinVoteSilent(ctx.Guild.Id, pinvote == "true");
                 await ctx.ReplyAsync("Your preferences were updated", ephemeral: true);
             }
         }

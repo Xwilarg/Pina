@@ -19,6 +19,7 @@ namespace Pina
             guildsCanBotInteract = new();
             guildsVotesRequired = new();
             guildsCanUnpin = new();
+            guildsPinVoteSilent = new();
         }
 
         public async Task InitAsync(string dbName = "Pina")
@@ -35,6 +36,7 @@ namespace Pina
         private const string defaultWhitelist = "0";
         public const bool defaultCanBotInteract = false;
         public const bool defaultCanUnpin = true;
+        public const bool defaultArePinVoteSilent = false;
 
         public async Task InitGuildAsync(ulong guildId)
         {
@@ -49,6 +51,7 @@ namespace Pina
                    .With("blacklist", defaultWhitelist)
                    .With("canBotInteract", defaultCanBotInteract)
                    .With("canUnpin", defaultCanUnpin)
+                   .With("pinVoteSilent", defaultArePinVoteSilent)
                     ).RunAsync(conn);
                 UpdateVerbosity(guildId, defaultVebosity);
                 UpdateWhitelist(guildId, defaultWhitelist);
@@ -70,6 +73,8 @@ namespace Pina
                 UpdateBotVotesRequired(guildId, votesRequired ?? 1);
                 var canUnpin = (bool?)json.canUnpin;
                 UpdateCanUnpin(guildId, canUnpin ?? defaultCanUnpin);
+                var pinVoteSilent = (bool?)json.pinVoteSilent;
+                UpdateArePinVoteSilent(guildId, pinVoteSilent ?? defaultArePinVoteSilent);
             }
         }
 
@@ -117,6 +122,14 @@ namespace Pina
         {
             await R.Db(dbName).Table("Guilds").Update(R.HashMap("id", guildId.ToString())
                 .With("canUnpin", value)
+                ).RunAsync(conn);
+            UpdateCanUnpin(guildId, value);
+        }
+
+        public async Task SetArePinVoteSilent(ulong guildId, bool value)
+        {
+            await R.Db(dbName).Table("Guilds").Update(R.HashMap("id", guildId.ToString())
+                .With("pinVoteSilent", value)
                 ).RunAsync(conn);
             UpdateCanUnpin(guildId, value);
         }
@@ -182,6 +195,14 @@ namespace Pina
             return value;
         }
 
+        public bool AreVotePinSilent(ulong? guildId)
+        {
+            if (guildId == null || !guildsPinVoteSilent.ContainsKey(guildId.Value))
+                return defaultCanUnpin;
+            var value = guildsPinVoteSilent[guildId.Value];
+            return value;
+        }
+
         private void UpdateVerbosity(ulong guildId, string value)
             => UpdateDictionary(guildId, value, guildsVerbosity);
 
@@ -199,6 +220,9 @@ namespace Pina
 
         private void UpdateCanUnpin(ulong guildId, bool value)
             => UpdateDictionary(guildId, value, guildsCanUnpin);
+
+        private void UpdateArePinVoteSilent(ulong guildId, bool value)
+            => UpdateDictionary(guildId, value, guildsPinVoteSilent);
 
         private void UpdateDictionary<T>(ulong guildId, T value, Dictionary<ulong, T> dict)
         {
@@ -224,6 +248,7 @@ namespace Pina
         private Dictionary<ulong, bool> guildsCanBotInteract;
         private Dictionary<ulong, int> guildsVotesRequired;
         private Dictionary<ulong, bool> guildsCanUnpin;
+        private Dictionary<ulong, bool> guildsPinVoteSilent;
 
         private RethinkDB R;
         private Connection conn;
