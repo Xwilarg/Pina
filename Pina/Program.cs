@@ -155,7 +155,7 @@ namespace Pina
         /// </summary>
         public Dictionary<ulong, Tuple<IMessage, int, List<ulong>, bool, IUserMessage>> PinAwaiting = new();
 
-        public async Task PinMessageAsync(IMessage msg, IUser user, ulong? guildId, bool isFromEmote, bool pin)
+        public async Task<bool> PinMessageAsync(IMessage msg, IUser user, ulong? guildId, bool isFromEmote, bool pin)
         {
             var guildChan = msg.Channel as ITextChannel;
             bool isNotInGuild = guildChan == null;
@@ -189,6 +189,7 @@ namespace Pina
                             await ((IUserMessage)msg).PinAsync();
                         else
                             await ((IUserMessage)msg).UnpinAsync();
+                        return true;
                     }
                     else if (PinAwaiting.Values.ToArray().Any(x => x.Item1.Id == msg.Id))
                     {
@@ -203,6 +204,7 @@ namespace Pina
                                     await ((IUserMessage)msg).UnpinAsync();
                                 PinAwaiting.Remove(elem.Key);
                                 await elem.Value.Item5.DeleteAsync();
+                                return true;
                             }
                             else if (isFromEmote)
                             {
@@ -256,6 +258,7 @@ namespace Pina
                     }
                 }
             }
+            return false;
         }
 
         private async Task ReactionAdded(Cacheable<IUserMessage, ulong> msg, Cacheable<IMessageChannel, ulong> _, SocketReaction react)
@@ -296,10 +299,10 @@ namespace Pina
                         }.Build());
                     }
                 }
-                else if (react.Emote.Name == "📌" || react.Emote.Name == "📍")
-                {
-                    await PinMessageAsync(await msg.GetOrDownloadAsync(), react.User.IsSpecified ? react.User.Value : null, react.Channel as ITextChannel == null ? null : ((ITextChannel)react.Channel).Guild.Id, true, true);
-                }
+            }
+            if (react.Emote.Name == "📌" || react.Emote.Name == "📍")
+            {
+                await PinMessageAsync(await msg.GetOrDownloadAsync(), react.User.IsSpecified ? react.User.Value : null, react.Channel as ITextChannel == null ? null : ((ITextChannel)react.Channel).Guild.Id, true, true);
             }
         }
 
