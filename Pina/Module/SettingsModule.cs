@@ -142,7 +142,7 @@ namespace Pina.Module
 
         public static async Task VoteRequiredAsync(ICommandContext ctx)
         {
-            var nbVotes = ctx.GetArgument<int>("nbvotes");
+            var nbVotes = ctx.GetArgument<long>("nbvotes");
             if (ctx.Guild == null)
             {
                 await ctx.ReplyAsync("This command is only available in a guild.", ephemeral: true);
@@ -151,7 +151,7 @@ namespace Pina.Module
             {
                 await ctx.ReplyAsync("You don't have the permission to do this command.", ephemeral: true);
             }
-            await Program.P.GetDb().SetBotVotesRequired(ctx.Guild.Id, nbVotes);
+            await Program.P.GetDb().SetBotVotesRequired(ctx.Guild.Id, (int)nbVotes);
             await ctx.ReplyAsync("Your preferences were updated", ephemeral: true);
         }
 
@@ -173,28 +173,6 @@ namespace Pina.Module
             else
             {
                 await Program.P.GetDb().SetCanUnpin(ctx.Guild.Id, canUnpin == "true");
-                await ctx.ReplyAsync("Your preferences were updated", ephemeral: true);
-            }
-        }
-
-        public static async Task PinVoteSilentAsync(ICommandContext ctx)
-        {
-            var pinvote = ctx.GetArgument<string>("pinvote");
-            if (ctx.Guild == null)
-            {
-                await ctx.ReplyAsync("This command is only available in a guild.", ephemeral: true);
-            }
-            if (!CanModify(ctx.User, ctx.Guild.OwnerId))
-            {
-                await ctx.ReplyAsync("You don't have the permission to do this command.", ephemeral: true);
-            }
-            else if (pinvote != "true" && pinvote != "false")
-            {
-                await ctx.ReplyAsync("You must provide 'true' or 'false' as an argument.", ephemeral: true);
-            }
-            else
-            {
-                await Program.P.GetDb().SetArePinVoteSilent(ctx.Guild.Id, pinvote == "true");
                 await ctx.ReplyAsync("Your preferences were updated", ephemeral: true);
             }
         }

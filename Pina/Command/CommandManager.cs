@@ -242,28 +242,6 @@ namespace Pina.Command
                             }
                         }.Build()
                     }
-                },
-                {
-                    "pinvote",
-                    new()
-                    {
-                        Callback = SettingsModule.PinVoteSilentAsync,
-                        SlashCommand = new SlashCommandBuilder()
-                        {
-                            Name = "pinvotesilent",
-                            Description = "Allow to prevent vote for pin to display a new message",
-                            Options = new()
-                            {
-                                new SlashCommandOptionBuilder()
-                                {
-                                    Name = "pinvote",
-                                    Description = "true to not display a new message, else false",
-                                    Type = ApplicationCommandOptionType.String,
-                                    IsRequired = true
-                                }
-                            }
-                        }.Build()
-                    }
                 }
                 #endregion
             };

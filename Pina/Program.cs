@@ -204,7 +204,7 @@ namespace Pina
                                 PinAwaiting.Remove(elem.Key);
                                 await elem.Value.Item5.DeleteAsync();
                             }
-                            else if (!db.AreVotePinSilent(guildId))
+                            else if (isFromEmote)
                             {
                                 PinAwaiting[elem.Key].Item3.Add(user.Id);
                                 await elem.Value.Item5.ModifyAsync(x => x.Embed = new EmbedBuilder
@@ -222,18 +222,25 @@ namespace Pina
                     }
                     else
                     {
-                        var n = await msg.Channel.SendMessageAsync(embed: new EmbedBuilder
+                        if (!isFromEmote)
                         {
-                            Title = "Vote",
-                            Description = $"A vote was started to {(pin ? "pin" : "unpin")} the message {msg.GetJumpUrl()}\n{nbVotes} required",
-                            Color = Color.Blue,
-                            Footer = new EmbedFooterBuilder
+                            var n = await msg.Channel.SendMessageAsync(embed: new EmbedBuilder
                             {
-                                Text = "Current number of votes: 1"
-                            }
-                        }.Build());
-                        await n.AddReactionAsync(new Emoji("✅"));
-                        PinAwaiting.Add(n.Id, new Tuple<IMessage, int, List<ulong>, bool, IUserMessage>(msg, nbVotes, new List<ulong> { user.Id }, pin, n));
+                                Title = "Vote",
+                                Description = $"A vote was started to {(pin ? "pin" : "unpin")} the message {msg.GetJumpUrl()}\n{nbVotes} required",
+                                Color = Color.Blue,
+                                Footer = new EmbedFooterBuilder
+                                {
+                                    Text = "Current number of votes: 1"
+                                }
+                            }.Build());
+                            await n.AddReactionAsync(new Emoji("✅"));
+                            PinAwaiting.Add(n.Id, new Tuple<IMessage, int, List<ulong>, bool, IUserMessage>(msg, nbVotes, new List<ulong> { user.Id }, pin, n));
+                        }
+                        else
+                        {
+                            PinAwaiting.Add(msg.Id, new Tuple<IMessage, int, List<ulong>, bool, IUserMessage>(msg, nbVotes, new List<ulong> { user.Id }, pin, null));
+                        }
                     }
                 }
                 catch (HttpException http)
@@ -253,15 +260,11 @@ namespace Pina
 
         private async Task ReactionAdded(Cacheable<IUserMessage, ulong> msg, Cacheable<IMessageChannel, ulong> _, SocketReaction react)
         {
-            if (react.Emote.Name == "📌" || react.Emote.Name == "📍")
-            {
-                await PinMessageAsync(await msg.GetOrDownloadAsync(), react.User.IsSpecified ? react.User.Value : null, react.Channel as ITextChannel == null ? null : ((ITextChannel)react.Channel).Guild.Id, true, true);
-            }
-            else if (react.Emote.Name == "⛔" || react.Emote.Name == "🚫")
+            if (react.Emote.Name == "⛔" || react.Emote.Name == "🚫")
             {
                 await PinMessageAsync(await msg.GetOrDownloadAsync(), react.User.IsSpecified ? react.User.Value : null, react.Channel as ITextChannel == null ? null : ((ITextChannel)react.Channel).Guild.Id, true, false);
             }
-            if ((react.Emote.Name == "📌" || react.Emote.Name == "📍" || react.Emote.Name == "✅") && react.UserId != client.CurrentUser.Id && PinAwaiting.ContainsKey(msg.Id))
+            else if ((react.Emote.Name == "📌" || react.Emote.Name == "📍" || react.Emote.Name == "✅") && react.UserId != client.CurrentUser.Id && PinAwaiting.ContainsKey(msg.Id))
             {
                 var value = PinAwaiting[msg.Id];
                 if (!value.Item3.Contains(react.UserId))
@@ -273,7 +276,10 @@ namespace Pina
                         else
                             await ((IUserMessage)value.Item1).UnpinAsync();
                         PinAwaiting.Remove(msg.Id);
-                        await value.Item5.DeleteAsync();
+                        if (value.Item5 != null)
+                        {
+                            await value.Item5.DeleteAsync();
+                        }
                     }
                     else
                     {
@@ -289,6 +295,10 @@ namespace Pina
                             }
                         }.Build());
                     }
+                }
+                else if (react.Emote.Name == "📌" || react.Emote.Name == "📍")
+                {
+                    await PinMessageAsync(await msg.GetOrDownloadAsync(), react.User.IsSpecified ? react.User.Value : null, react.Channel as ITextChannel == null ? null : ((ITextChannel)react.Channel).Guild.Id, true, true);
                 }
             }
         }
