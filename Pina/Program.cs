@@ -204,7 +204,7 @@ namespace Pina
                                 PinAwaiting.Remove(elem.Key);
                                 await elem.Value.Item5.DeleteAsync();
                             }
-                            else
+                            else if (!db.AreVotePinSilent(guildId))
                             {
                                 PinAwaiting[elem.Key].Item3.Add(user.Id);
                                 await elem.Value.Item5.ModifyAsync(x => x.Embed = new EmbedBuilder
@@ -261,7 +261,7 @@ namespace Pina
             {
                 await PinMessageAsync(await msg.GetOrDownloadAsync(), react.User.IsSpecified ? react.User.Value : null, react.Channel as ITextChannel == null ? null : ((ITextChannel)react.Channel).Guild.Id, true, false);
             }
-            else if (react.Emote.Name == "✅" && react.UserId != client.CurrentUser.Id && PinAwaiting.ContainsKey(msg.Id))
+            if ((react.Emote.Name == "📌" || react.Emote.Name == "📍" || react.Emote.Name == "✅") && react.UserId != client.CurrentUser.Id && PinAwaiting.ContainsKey(msg.Id))
             {
                 var value = PinAwaiting[msg.Id];
                 if (!value.Item3.Contains(react.UserId))

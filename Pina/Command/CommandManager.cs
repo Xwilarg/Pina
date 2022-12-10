@@ -214,7 +214,7 @@ namespace Pina.Command
                                 {
                                     Name = "nbvotes",
                                     Description = "Number of votes required or 0 to disable",
-                                    Type = ApplicationCommandOptionType.Number,
+                                    Type = ApplicationCommandOptionType.Integer,
                                     IsRequired = true
                                 }
                             }
@@ -236,7 +236,7 @@ namespace Pina.Command
                                 {
                                     Name = "canunpin",
                                     Description = "Number of votes required or 0 to disable",
-                                    Type = ApplicationCommandOptionType.Number,
+                                    Type = ApplicationCommandOptionType.Integer,
                                     IsRequired = true
                                 }
                             }
@@ -247,7 +247,7 @@ namespace Pina.Command
                     "pinvote",
                     new()
                     {
-                        Callback = SettingsModule.CanUnpinAsync,
+                        Callback = SettingsModule.PinVoteSilentAsync,
                         SlashCommand = new SlashCommandBuilder()
                         {
                             Name = "pinvotesilent",
@@ -258,7 +258,7 @@ namespace Pina.Command
                                 {
                                     Name = "pinvote",
                                     Description = "true to not display a new message, else false",
-                                    Type = ApplicationCommandOptionType.Number,
+                                    Type = ApplicationCommandOptionType.String,
                                     IsRequired = true
                                 }
                             }
