@@ -235,8 +235,8 @@ namespace Pina.Command
                                 new SlashCommandOptionBuilder()
                                 {
                                     Name = "canunpin",
-                                    Description = "Number of votes required or 0 to disable",
-                                    Type = ApplicationCommandOptionType.Integer,
+                                    Description = "\"true\" or \"false\"",
+                                    Type = ApplicationCommandOptionType.String,
                                     IsRequired = true
                                 }
                             }
